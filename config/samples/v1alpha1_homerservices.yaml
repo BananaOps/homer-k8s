@@ -1,0 +1,9 @@
+apiVersion: homer.bananaops.io/v1alpha1
+kind: HomerServices
+metadata:
+  labels:
+    app.kubernetes.io/name: homer-k8s
+    app.kubernetes.io/managed-by: kustomize
+  name: homerservices-sample
+spec:
+  # TODO(user): Add fields here
