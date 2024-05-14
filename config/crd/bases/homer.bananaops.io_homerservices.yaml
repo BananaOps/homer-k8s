@@ -39,10 +39,42 @@ spec:
           spec:
             description: HomerServicesSpec defines the desired state of HomerServices
             properties:
-              foo:
+              groups:
                 description: Foo is an example field of HomerServices. Edit homerservices_types.go
                   to remove/update
-                type: string
+                items:
+                  properties:
+                    icon:
+                      type: string
+                    items:
+                      items:
+                        properties:
+                          background:
+                            type: string
+                          icon:
+                            type: string
+                          keywords:
+                            type: string
+                          logo:
+                            type: string
+                          name:
+                            type: string
+                          subtitle:
+                            type: string
+                          tag:
+                            type: string
+                          tagstyle:
+                            type: string
+                          target:
+                            type: string
+                          url:
+                            type: string
+                        type: object
+                      type: array
+                    name:
+                      type: string
+                  type: object
+                type: array
             type: object
           status:
             description: HomerServicesStatus defines the observed state of HomerServices

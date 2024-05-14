@@ -29,7 +29,7 @@ type HomerServicesSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of HomerServices. Edit homerservices_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Groups []Group `json:"groups,omitempty"`
 }
 
 // HomerServicesStatus defines the observed state of HomerServices
@@ -62,3 +62,23 @@ type HomerServicesList struct {
 func init() {
 	SchemeBuilder.Register(&HomerServices{}, &HomerServicesList{})
 }
+
+type Group struct {
+	Name string `json:"name,omitempty"`
+	Icon  string `json:"icon,omitempty"`
+	Items  []Item `json:"items,omitempty"`
+}
+
+type Item struct {
+	Name string `json:"name,omitempty"`
+	Icon  string `json:"icon,omitempty"`
+	Logo  string `json:"logo,omitempty"`
+	TagStyle  string `json:"tagstyle,omitempty"`
+	SubTitle  string `json:"subtitle,omitempty"`
+	Tag  string `json:"tag,omitempty"`
+	Keyword  string `json:"keywords,omitempty"`
+	Url  string `json:"url,omitempty"`
+	Target  string `json:"target,omitempty"`
+	Background  string `json:"background,omitempty"`
+}
+
