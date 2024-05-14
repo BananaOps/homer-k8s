@@ -19,13 +19,16 @@ package controller
 import (
 	"context"
 	"fmt"
+	"os"
+	"reflect"
 
+	"gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	homerbananaopsiov1alpha1 "github.com/jplanckeel/homer-k8s/api/v1alpha1"
+	homerv1alpha1 "github.com/jplanckeel/homer-k8s/api/v1alpha1"
 )
 
 // HomerServicesReconciler reconciles a HomerServices object
@@ -47,10 +50,48 @@ type HomerServicesReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.17.3/pkg/reconcile
+
+type Config struct {
+	Services []homerv1alpha1.Group `yaml:"services"`
+}
+
 func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	fmt.Println("Hello World")
+	var localConfig Config
+	var config Config
+	allServices, error := getAllHomerServices(ctx, r)
+	if error != nil {
+		fmt.Println(error, "unable to fetch HomerServicesList")
+		return ctrl.Result{}, error
+	}
+	for _, service := range allServices.Items {
+		config.Services = append(config.Services, service.Spec.Groups...)
+	}
+
+	// Convertir la configuration en YAML
+	file, _ := os.ReadFile("config.yaml")
+	err := yaml.Unmarshal(file, &localConfig)
+	if err != nil {
+		fmt.Println("error: %v", err)
+	}
+
+	// Convertir la configuration en YAML
+	data, err := yaml.Marshal(config)
+	if err != nil {
+		fmt.Println("error: %v", err)
+	}
+
+	
+	if !reflect.DeepEqual(config, localConfig) {
+		// Écrire le YAML dans un fichier
+		err = os.WriteFile("config.yaml", data, 0644)
+		if err != nil {
+			fmt.Println("error: %v", err)
+		}
+
+		fmt.Println("config.yaml updated")
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -58,6 +99,16 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 // SetupWithManager sets up the controller with the Manager.
 func (r *HomerServicesReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&homerbananaopsiov1alpha1.HomerServices{}).
+		For(&homerv1alpha1.HomerServices{}).
 		Complete(r)
+}
+
+// Get all HomerServices
+func getAllHomerServices(ctx context.Context, r *HomerServicesReconciler) (*homerv1alpha1.HomerServicesList, error) {
+	var listService homerv1alpha1.HomerServicesList
+	if err := r.List(ctx, &listService); err != nil {
+		return nil, err
+	}
+
+	return &listService, nil
 }
