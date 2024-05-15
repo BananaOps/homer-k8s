@@ -29,20 +29,20 @@ rbac:
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
   # capabilities:
   #   drop:
   #   - ALL
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
 
 service:
   type: ClusterIP
-  port: 9101
+  port: 8080
   additionalLabels: {}
 
 ingress:

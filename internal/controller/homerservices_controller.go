@@ -69,14 +69,13 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		config.Services = append(config.Services, service.Spec.Groups...)
 	}
 
-	// Convertir la configuration en YAML
-	file, _ := os.ReadFile("config.yaml")
+
+	file, _ := os.ReadFile("/assets/config.yml")
 	err := yaml.Unmarshal(file, &localConfig)
 	if err != nil {
 		fmt.Println("error: %v", err)
 	}
 
-	// Convertir la configuration en YAML
 	data, err := yaml.Marshal(config)
 	if err != nil {
 		fmt.Println("error: %v", err)
@@ -84,8 +83,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	
 	if !reflect.DeepEqual(config, localConfig) {
-		// Écrire le YAML dans un fichier
-		err = os.WriteFile("config.yaml", data, 0644)
+		err = os.WriteFile("/assets/config.yml", data, 0644)
 		if err != nil {
 			fmt.Println("error: %v", err)
 		}

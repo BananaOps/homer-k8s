@@ -34,17 +34,20 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: metrics
-              containerPort: {{ .Values.service.port }}
+            - name: health
+              containerPort: 8081
               protocol: TCP
-          #livenessProbe:
-          #  httpGet:
-          #    path: /healthz
-          #    port: 8090
-          #readinessProbe:
-          #  httpGet:
-          #    path: /readyz
-          #    port: 8090
+            - name: controller
+              containerPort: 8090
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: health
           command:
             - /ko-app/cmd
           resources:
@@ -58,6 +61,10 @@ spec:
           #image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           image: "b4bz/homer:latest"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: dashboard
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /

@@ -13,6 +13,7 @@ rules:
       - create
       - delete
       - update
+      - watch
     apiGroups:
       - homer.bananaops.io
     resources:
