@@ -25,10 +25,8 @@ import (
 
 // HomerServicesSpec defines the desired state of HomerServices
 type HomerServicesSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of HomerServices. Edit homerservices_types.go to remove/update
+	// Groups is a map of group for items service
 	Groups []Group `json:"groups,omitempty"`
 }
 
@@ -64,21 +62,33 @@ func init() {
 }
 
 type Group struct {
+	// Name of group in homer dashboard
 	Name string `json:"name,omitempty"`
-	Icon  string `json:"icon,omitempty"`
-	Items  []Item `json:"items,omitempty"`
+	// Icon of group in homer dashboard, See https://fontawesome.com/v5/search for icons options
+	Icon string `json:"icon,omitempty"`
+	// Items is map of services in homer dashboard
+	Items []Item `json:"items,omitempty"`
 }
 
 type Item struct {
+	// Name of service in homer dashboard
 	Name string `json:"name,omitempty"`
-	Icon  string `json:"icon,omitempty"`
-	Logo  string `json:"logo,omitempty"`
-	TagStyle  string `json:"tagstyle,omitempty"`
-	SubTitle  string `json:"subtitle,omitempty"`
-	Tag  string `json:"tag,omitempty"`
-	Keyword  string `json:"keywords,omitempty"`
-	Url  string `json:"url,omitempty"`
-	Target  string `json:"target,omitempty"`
-	Background  string `json:"background,omitempty"`
+	// Icon of service in homer dashboard, See https://fontawesome.com/v5/search for icons options
+	Icon string `json:"icon,omitempty"`
+	// A path to an image can also be provided. Note that icon take precedence if both icon and logo are set.
+	Logo string `json:"logo,omitempty"`
+	// Tagstyle is the style of the tag in homer dashboard, See https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md#style-options	for style options
+	TagStyle   string `json:"tagstyle,omitempty"`
+	// SubTitle of the service in homer dashboard
+	SubTitle   string `json:"subtitle,omitempty"`
+	// Tag of the service in homer dashboard
+	Tag        string `json:"tag,omitempty"`
+	// Keywords of the service in homer dashboard
+	Keyword    string `json:"keywords,omitempty"`
+	// Url of the service in homer dashboard
+	Url        string `json:"url,omitempty"`
+	// Target of the service in homer dashboard
+	Target     string `json:"target,omitempty"`
+	// Optional color for card to set color directly without custom stylesheet
+	Background string `json:"background,omitempty"`
 }
-

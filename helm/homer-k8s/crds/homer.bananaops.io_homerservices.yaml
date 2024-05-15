@@ -40,38 +40,57 @@ spec:
             description: HomerServicesSpec defines the desired state of HomerServices
             properties:
               groups:
-                description: Foo is an example field of HomerServices. Edit homerservices_types.go
-                  to remove/update
+                description: Groups is a map of group for items service
                 items:
                   properties:
                     icon:
+                      description: Icon of group in homer dashboard, See https://fontawesome.com/v5/search
+                        for icons options
                       type: string
                     items:
+                      description: Items is map of services in homer dashboard
                       items:
                         properties:
                           background:
+                            description: Optional color for card to set color directly
+                              without custom stylesheet
                             type: string
                           icon:
+                            description: Icon of service in homer dashboard, See https://fontawesome.com/v5/search
+                              for icons options
                             type: string
                           keywords:
+                            description: Keywords of the service in homer dashboard
                             type: string
                           logo:
+                            description: A path to an image can also be provided.
+                              Note that icon take precedence if both icon and logo
+                              are set.
                             type: string
                           name:
+                            description: Name of service in homer dashboard
                             type: string
                           subtitle:
+                            description: SubTitle of the service in homer dashboard
                             type: string
                           tag:
+                            description: Tag of the service in homer dashboard
                             type: string
                           tagstyle:
+                            description: "Tagstyle is the style of the tag in homer
+                              dashboard, See https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md#style-options\tfor
+                              style options"
                             type: string
                           target:
+                            description: Target of the service in homer dashboard
                             type: string
                           url:
+                            description: Url of the service in homer dashboard
                             type: string
                         type: object
                       type: array
                     name:
+                      description: Name of group in homer dashboard
                       type: string
                   type: object
                 type: array
