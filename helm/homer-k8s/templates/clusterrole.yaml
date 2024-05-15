@@ -1,0 +1,20 @@
+{{- if .Values.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "homer-k8s.fullname" . }}
+  labels:
+    {{- include "homer-k8s.labels" . | nindent 4 }}
+rules:
+  # CRUD homerservices
+  - verbs:
+      - get
+      - list
+      - create
+      - delete
+      - update
+    apiGroups:
+      - homer.bananaops.io
+    resources:
+      - homerservices
+{{- end }}
