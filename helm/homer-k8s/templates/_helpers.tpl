@@ -60,3 +60,11 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+Calculate the config from structured and unstructured text input
+*/}}
+{{- define "homer-k8s.calculatedConfig" -}}
+{{ tpl (mergeOverwrite (tpl .Values.homer.config . | fromYaml) .Values.homer.structuredConfig | toYaml) . }}
+{{- end }}

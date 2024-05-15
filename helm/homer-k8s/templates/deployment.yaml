@@ -55,6 +55,8 @@ spec:
           volumeMounts:
             - mountPath: /assets
               name: asssets
+            - mountPath: /config
+              name: config
         - name: {{ .Chart.Name }}-dashboard
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -93,3 +95,9 @@ spec:
       volumes:
         - name: asssets
           emptyDir: {}
+        - name: config
+          configMap:
+            name: {{ include "homer-k8s.fullname" . }}
+            items:
+              - key: global_config.yml
+                path: global_config.yml

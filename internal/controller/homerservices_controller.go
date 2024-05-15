@@ -73,27 +73,27 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	}
 
 	var localConfig homerconfig.HomerConfig
-	file, _ := os.ReadFile("./assets/config.yml")
+	file, _ := os.ReadFile("/assets/config.yml")
 	err := yaml.Unmarshal(file, &localConfig)
 	if err != nil {
 		logger.Error(err, "error:")
 	}
 
-	var configmap homerconfig.HomerConfig
-	fileConfigmap, _ := os.ReadFile("configmap.yaml")
-	err = yaml.Unmarshal(fileConfigmap, &configmap)
+	var globalConfig homerconfig.HomerConfig
+	fileglobalConfig, _ := os.ReadFile("/config/global_config.yml")
+	err = yaml.Unmarshal(fileglobalConfig, &globalConfig)
 	if err != nil {
 		logger.Error(err, "error:")
 	}
 
-	// Add Services in configmap in config
-	configmap.Services = append(configmap.Services, config.Services...)
+	// Add Services in globalConfig in config
+	globalConfig.Services = append(globalConfig.Services, config.Services...)
 
-	d, _ := yaml.Marshal(configmap)
+	d, _ := yaml.Marshal(globalConfig)
 
 	// Update config.yml if diff with config.Services
-	if !reflect.DeepEqual(configmap.Services, localConfig.Services) {
-		err = os.WriteFile("./assets/config.yml", d, 0644)
+	if !reflect.DeepEqual(globalConfig.Services, localConfig.Services) {
+		err = os.WriteFile("/assets/config.yml", d, 0644)
 		if err != nil {
 			logger.Error(err, "error:")
 		}
