@@ -22,14 +22,21 @@ import (
 	"os"
 	"reflect"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
+	"github.com/go-logr/logr"
 	homerv1alpha1 "github.com/jplanckeel/homer-k8s/api/v1alpha1"
+	homerconfig "github.com/jplanckeel/homer-k8s/pkg/config"
 )
+
+// Define logger
+var logger logr.Logger
+var logContext []interface{} = []interface{}{"controller","homerservices","controllerGroup","homer.bananaops.io","controllerKind","HomerServices"}
 
 // HomerServicesReconciler reconciles a HomerServices object
 type HomerServicesReconciler struct {
@@ -51,15 +58,11 @@ type HomerServicesReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.17.3/pkg/reconcile
 
-type Config struct {
-	Services []homerv1alpha1.Group `yaml:"services"`
-}
-
 func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	var localConfig Config
-	var config Config
+	// Get all CRD HomerServices
+	var config homerconfig.HomerConfig
 	allServices, error := getAllHomerServices(ctx, r)
 	if error != nil {
 		fmt.Println(error, "unable to fetch HomerServicesList")
@@ -69,26 +72,33 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		config.Services = append(config.Services, service.Spec.Groups...)
 	}
 
-
-	file, _ := os.ReadFile("/assets/config.yml")
+	var localConfig homerconfig.HomerConfig
+	file, _ := os.ReadFile("./assets/config.yml")
 	err := yaml.Unmarshal(file, &localConfig)
 	if err != nil {
-		fmt.Println("error: %v", err)
+		logger.Error(err, "error:")
 	}
 
-	data, err := yaml.Marshal(config)
+	var configmap homerconfig.HomerConfig
+	fileConfigmap, _ := os.ReadFile("configmap.yaml")
+	err = yaml.Unmarshal(fileConfigmap, &configmap)
 	if err != nil {
-		fmt.Println("error: %v", err)
+		logger.Error(err, "error:")
 	}
 
-	
-	if !reflect.DeepEqual(config, localConfig) {
-		err = os.WriteFile("/assets/config.yml", data, 0644)
+	// Add Services in configmap in config
+	configmap.Services = append(configmap.Services, config.Services...)
+
+	d, _ := yaml.Marshal(configmap)
+
+	// Update config.yml if diff with config
+	if !reflect.DeepEqual(configmap, localConfig) {
+		err = os.WriteFile("./assets/config.yml", d, 0644)
 		if err != nil {
-			fmt.Println("error: %v", err)
+			logger.Error(err, "error:")
 		}
 
-		fmt.Println("config.yaml updated")
+		logger.Info("Homer Config Updated", logContext...)
 	}
 
 	return ctrl.Result{}, nil
@@ -109,4 +119,12 @@ func getAllHomerServices(ctx context.Context, r *HomerServicesReconciler) (*home
 	}
 
 	return &listService, nil
+}
+
+// Init logger slog for json and output to stdout
+func init() {
+	opts := zap.Options{
+		Development: false,
+	}
+	logger = zap.New(zap.UseFlagOptions(&opts))
 }
