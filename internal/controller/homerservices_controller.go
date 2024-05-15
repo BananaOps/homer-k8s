@@ -91,8 +91,8 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	d, _ := yaml.Marshal(configmap)
 
-	// Update config.yml if diff with config
-	if !reflect.DeepEqual(configmap, localConfig) {
+	// Update config.yml if diff with config.Services
+	if !reflect.DeepEqual(configmap.Services, localConfig.Services) {
 		err = os.WriteFile("./assets/config.yml", d, 0644)
 		if err != nil {
 			logger.Error(err, "error:")
