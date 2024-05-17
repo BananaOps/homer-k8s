@@ -6,7 +6,7 @@
   <img src="https://cdn.rawgit.com/BananaOps/homer-k8s/main/images/banner.png" style="width:33%" alt="homer-k8s">
   </p>
   <p align="center">
-    An Open-Source kubernetes controller to use Homer on Kk8s
+    An Open-Source kubernetes controller to use Homer on k8s
     <br />
   </p>
 </p>
