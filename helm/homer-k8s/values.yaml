@@ -104,10 +104,10 @@ homer:
   # -- Structured homer configuration, takes precedence over `homer.config`
   structuredConfig: {}
   config: |
-    title: "App dashboard Helm"
-    subtitle: "Homer"
+    title: "App dashboard"
+    subtitle: "Homer k8s"
     # documentTitle: "Welcome" # Customize the browser tab text
-    logo: "assets/logo.png"
+    logo: "https://raw.githubusercontent.com//bastienwirtz/homer/main/public/logo.png"
     # Alternatively a fa icon can be provided:
     # icon: "fas fa-skull-crossbones"
 
@@ -200,12 +200,6 @@ homer:
       - name: "link 2"
         icon: "fas fa-book"
         url: "https://github.com/bastienwirtz/homer"
-      # this will link to a second homer page that will load config from page2.yml and keep default config values as in config.yml file
-      # see url field and assets/page.yml used in this example:
-      - name: "Second Page"
-        icon: "fas fa-file-alt"
-        url: "#page2"
-    
     # Services
     # First level array represents a group.
     # Leave only a "items" key if not using group (group name, icon & tagstyle are optional, section separation will not be displayed).

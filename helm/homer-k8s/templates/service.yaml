@@ -11,8 +11,8 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: metrics
+      targetPort: dashboard
       protocol: TCP
-      name: metrics
+      name: dashboard
   selector:
     {{- include "homer-k8s.selectorLabels" . | nindent 4 }}
