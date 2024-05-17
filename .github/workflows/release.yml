@@ -80,14 +80,6 @@ jobs:
           KO_DOCKER_REPO: bananaops/homer-k8s
         run: ko publish ./cmd --bare --tags latest,${{steps.version_tag.outputs.tag}}
 
-      - name: Run GoReleaser
-        if: "steps.tag.outputs.value != ''"
-        uses: goreleaser/goreleaser-action@v5
-        with:
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   release-helm: 
     needs: [release]
     if: startsWith(github.ref, 'refs/tags/v')
