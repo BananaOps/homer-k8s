@@ -84,8 +84,6 @@ jobs:
         if: "steps.tag.outputs.value != ''"
         uses: goreleaser/goreleaser-action@v5
         with:
-          distribution: goreleaser
-          version: ${{steps.version_tag.outputs.tag}}
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
