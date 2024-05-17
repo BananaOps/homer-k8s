@@ -78,17 +78,17 @@ type Item struct {
 	// A path to an image can also be provided. Note that icon take precedence if both icon and logo are set.
 	Logo string `json:"logo,omitempty"`
 	// Tagstyle is the style of the tag in homer dashboard, See https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md#style-options	for style options
-	TagStyle   string `json:"tagstyle,omitempty"`
+	TagStyle string `json:"tagstyle,omitempty"`
 	// SubTitle of the service in homer dashboard
-	SubTitle   string `json:"subtitle,omitempty"`
+	SubTitle string `json:"subtitle,omitempty"`
 	// Tag of the service in homer dashboard
-	Tag        string `json:"tag,omitempty"`
+	Tag string `json:"tag,omitempty"`
 	// Keywords of the service in homer dashboard
-	Keyword    string `json:"keywords,omitempty"`
+	Keyword string `json:"keywords,omitempty"`
 	// Url of the service in homer dashboard
-	Url        string `json:"url,omitempty"`
+	Url string `json:"url,omitempty"`
 	// Target of the service in homer dashboard
-	Target     string `json:"target,omitempty"`
+	Target string `json:"target,omitempty"`
 	// Optional color for card to set color directly without custom stylesheet
 	Background string `json:"background,omitempty"`
 }
