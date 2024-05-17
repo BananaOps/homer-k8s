@@ -36,7 +36,7 @@ import (
 
 // Define logger
 var logger logr.Logger
-var logContext []interface{} = []interface{}{"controller","homerservices","controllerGroup","homer.bananaops.io","controllerKind","HomerServices"}
+var logContext []interface{} = []interface{}{"controller", "homerservices", "controllerGroup", "homer.bananaops.io", "controllerKind", "HomerServices"}
 
 // HomerServicesReconciler reconciles a HomerServices object
 type HomerServicesReconciler struct {
@@ -93,7 +93,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	// Update config.yml if diff with config.Services
 	if !reflect.DeepEqual(globalConfig.Services, localConfig.Services) {
-		err = os.WriteFile("/assets/config.yml", d, 0644)
+		err = os.WriteFile("/assets/config.yml", d, 0600)
 		if err != nil {
 			logger.Error(err, "error:")
 		}
