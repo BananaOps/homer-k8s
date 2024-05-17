@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "homer-k8s.fullname" . }}
-  labels:
-    {{- include "homer-k8s.labels" . | nindent 4 }}
-data:
-  global_config.yml: | 
-    {{ include "homer-k8s.calculatedConfig" . | nindent 4 }}
