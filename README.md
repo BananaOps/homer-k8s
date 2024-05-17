@@ -42,7 +42,7 @@ This project in to order to facilite the deployment in Kubernetes Cluster with d
 ### Requirements
 
 - [golang](https://go.dev/) >= 1.22
-- [ko-build]()
+- [ko-build](https://ko.build/)
 - [helm](https://helm.sh/)
 
 
