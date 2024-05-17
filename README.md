@@ -13,10 +13,10 @@
 <p align="center">
   <a href="https://github.com/BananaOps/homer-k8s/releases"><img title="Release" src="https://img.shields.io/github/v/release/BananaOps/homer-k8s"/></a>
   <a href=""><img title="Downloads" src="https://img.shields.io/github/downloads/BananaOps/homer-k8s/total.svg"/></a>
-  <a href=""><img title="Docker pulls" src="https://img.shields.io/docker/pulls/BananaOps/homer-k8s"/></a>
+  <a href=""><img title="Docker pulls" src="https://img.shields.io/docker/pulls/bananaops/homer-k8s"/></a>
   <a href=""><img title="Go version" src="https://img.shields.io/github/go-mod/go-version/BananaOps/homer-k8s"/></a>
-  <a href=""><img title="Docker builds" src="https://img.shields.io/docker/automated/BananaOps/homer-k8s"/></a>
-  <a href=""><img title="Code builds" src="https://img.shields.io/github/actions/workflow/status/BananaOps/homer-k8s/build.yml"/></a>
+  <a href=""><img title="Docker builds" src="https://img.shields.io/docker/automated/bananaops/homer-k8s"/></a>
+  <a href=""><img title="Code builds" src="https://img.shields.io/github/actions/workflow/status/BananaOps/homer-k8s/release.yml"/></a>
   <a href=""><img title="apache licence" src="https://img.shields.io/badge/License-Apache-yellow.svg"/></a>
   <a href="https://github.com/BananaOps/homer-k8s/releases"><img title="Release date" src="https://img.shields.io/github/release-date/BananaOps/homer-k8s"/></a>
 </p>
