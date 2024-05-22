@@ -12,7 +12,7 @@ type HomerConfig struct {
 	Footer   string                `yaml:"footer"`
 	Columns  string                `yaml:"columns"`
 	Colors   Colors                `yaml:"colors"`
-	Messages Message               `yaml:"messages"`
+	Message Message               `yaml:"message"`
 	Links    []Link                `yaml:"links"`
 	Services []homerv1alpha1.Group `yaml:"services"`
 }
