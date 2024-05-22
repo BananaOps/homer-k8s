@@ -107,6 +107,23 @@ To deploy with skaffold:
 skaffold run
 ```
 
+### Deploy with Helm
+
+
+```bash
+```sh
+helm repo add bananaops https://bananaops.github.io/homer-k8s/
+helm repo update bananaops
+
+# install with all defaults
+helm install homer bananaops/homer-k8s
+
+# install with customisations
+wget https://raw.githubusercontent.com/bananaops/homer-k8s/main/helm/homer-k8s/values.yaml
+# edit values.yaml
+helm install homer bananaops/homer-k8s -f values.yaml
+```
+
 
 ## Contributing
 
