@@ -3,7 +3,7 @@ module github.com/jplanckeel/homer-k8s
 go 1.21
 
 require (
-	github.com/go-logr/logr v1.4.1
+	github.com/go-logr/logr v1.4.2
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.29.2
 	k8s.io/client-go v0.29.2
