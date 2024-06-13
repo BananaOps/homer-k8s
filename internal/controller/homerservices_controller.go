@@ -89,7 +89,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	// Add Services in globalConfig in config
 	globalConfig.Services = append(globalConfig.Services, config.Services...)
 
-	globalConfig.Services = mergeGroupWithSameName(globalConfig.Services)
+	globalConfig.Services = sortServicesPerItemsLength(mergeGroupWithSameName(globalConfig.Services))
 
 	d, _ := yaml.Marshal(globalConfig)
 
@@ -149,4 +149,16 @@ func mergeGroupWithSameName(g []homerv1alpha1.Group) []homerv1alpha1.Group {
 	}
 
 	return groups
+}
+
+func sortServicesPerItemsLength(g []homerv1alpha1.Group) []homerv1alpha1.Group {
+	for i := range g {
+		for j := range g {
+			if len(g[i].Items) < len(g[j].Items) {
+				g[i], g[j] = g[j], g[i]
+			}
+		}
+	}
+
+	return g
 }
