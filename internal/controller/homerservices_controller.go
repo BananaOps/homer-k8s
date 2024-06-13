@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -62,43 +63,80 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	_ = log.FromContext(ctx)
 
 	// Get all CRD HomerServices
-	var config homerconfig.HomerConfig
+	groups := map[string][]homerv1alpha1.Group{}
 	allServices, error := getAllHomerServices(ctx, r)
 	if error != nil {
 		fmt.Println(error, "unable to fetch HomerServicesList")
 		return ctrl.Result{}, error
 	}
+	pages := map[string]string{}
 	for _, service := range allServices.Items {
-		config.Services = append(config.Services, service.Spec.Groups...)
+		if _, ok := groups[service.Spec.Page]; !ok {
+			groups[service.Spec.Page] = []homerv1alpha1.Group{}
+		}
+		groups[service.Spec.Page] = append(groups[service.Spec.Page], service.Spec.Groups...)
+		pages[strings.ReplaceAll(strings.ToLower(service.Spec.Page), " ", "-")] = service.Spec.Page
 	}
 
-	var localConfig homerconfig.HomerConfig
-	file, _ := os.ReadFile("/assets/config.yml")
-	err := yaml.Unmarshal(file, &localConfig)
-	if err != nil {
-		logger.Error(err, "error:")
+	localConfigs := map[string]homerconfig.HomerConfig{}
+	files, _ := os.ReadDir("/assets")
+	for _, f := range files {
+		var localConfig homerconfig.HomerConfig
+		if !f.IsDir() && strings.HasSuffix(f.Name(), ".yml") {
+			file, _ := os.ReadFile("/assets/" + f.Name())
+			err := yaml.Unmarshal(file, &localConfig)
+			if err != nil {
+				logger.Error(err, "error:")
+			}
+			localConfigs[f.Name()] = localConfig
+		}
 	}
 
 	var globalConfig homerconfig.HomerConfig
 	fileglobalConfig, _ := os.ReadFile("/config/global_config.yml")
-	err = yaml.Unmarshal(fileglobalConfig, &globalConfig)
+	err := yaml.Unmarshal(fileglobalConfig, &globalConfig)
 	if err != nil {
 		logger.Error(err, "error:")
 	}
 
-	// Add Services in globalConfig in config
-	globalConfig.Services = append(globalConfig.Services, config.Services...)
+	for page, _ := range pages {
+		config := globalConfig
+		config.Services = append(config.Services, groups[page]...)
 
-	d, _ := yaml.Marshal(globalConfig)
+		for p, prettyP := range pages {
+			if p != page {
+				link := homerconfig.Link{
+					Name: prettyP,
+					Icon: "fas fa-list",
+					URL:  "#" + p,
+				}
+				config.Links = append(config.Links, link)
+			}
+		}
+		d, _ := yaml.Marshal(config)
+		if !reflect.DeepEqual(config.Services, localConfigs[page].Services) {
+			if page == "" {
+				err = os.WriteFile("/assets/config.yml", d, 0600)
+			} else {
+				err = os.WriteFile("/assets/"+page+".yml", d, 0600)
+			}
+			if err != nil {
+				logger.Error(err, "error:")
+			}
+			logger.Info("Homer Config "+page+" Updated", logContext...)
+		}
+	}
 
-	// Update config.yml if diff with config.Services
-	if !reflect.DeepEqual(globalConfig.Services, localConfig.Services) {
-		err = os.WriteFile("/assets/config.yml", d, 0600)
-		if err != nil {
-			logger.Error(err, "error:")
+	for page, _ := range localConfigs {
+		if _, ok := pages[page]; !ok {
+			err := os.Remove("/assets/" + page + ".yml")
+			if err != nil {
+				logger.Info("Homer Config "+page+" Removed", logContext...)
+			} else {
+				logger.Error(err, "Homer Config "+page+" Not Removed. Error:")
+			}
 		}
 
-		logger.Info("Homer Config Updated", logContext...)
 	}
 
 	return ctrl.Result{}, nil
