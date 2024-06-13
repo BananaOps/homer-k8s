@@ -89,6 +89,8 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	// Add Services in globalConfig in config
 	globalConfig.Services = append(globalConfig.Services, config.Services...)
 
+	globalConfig.Services = mergeGroupWithSameName(globalConfig.Services)
+
 	d, _ := yaml.Marshal(globalConfig)
 
 	// Update config.yml if diff with config.Services
@@ -127,4 +129,24 @@ func init() {
 		Development: false,
 	}
 	logger = zap.New(zap.UseFlagOptions(&opts))
+}
+
+func mergeGroupWithSameName(g []homerv1alpha1.Group) []homerv1alpha1.Group {
+	groups := []homerv1alpha1.Group{}
+
+	for _, g1 := range g {
+		found := false
+		for i, g2 := range groups {
+			if g1.Name == g2.Name {
+				groups[i].Items = append(groups[i].Items, g1.Items...)
+				found = true
+				break
+			}
+		}
+		if !found {
+			groups = append(groups, g1)
+		}
+	}
+
+	return groups
 }
