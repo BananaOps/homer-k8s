@@ -126,7 +126,6 @@ func getAllHomerServices(ctx context.Context, r *HomerServicesReconciler) (*home
 	return &listService, nil
 }
 
-
 func mergeGroupWithSameName(g []homerv1alpha1.Group) []homerv1alpha1.Group {
 	groups := []homerv1alpha1.Group{}
 
