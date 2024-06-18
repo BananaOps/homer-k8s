@@ -34,6 +34,9 @@ import (
 	homerconfig "github.com/jplanckeel/homer-k8s/pkg/config"
 )
 
+// Define config Path
+var configPath = os.Getenv("CONFIG_PATH")
+
 // Define logger
 var logger logr.Logger
 var logContext []interface{} = []interface{}{"controller", "homerservices", "controllerGroup", "homer.bananaops.io", "controllerKind", "HomerServices"}
@@ -73,7 +76,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	}
 
 	var localConfig homerconfig.HomerConfig
-	file, _ := os.ReadFile("/assets/config.yml")
+	file, _ := os.ReadFile(configPath)
 	err := yaml.Unmarshal(file, &localConfig)
 	if err != nil {
 		logger.Error(err, "error:")
@@ -95,7 +98,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	// Update config.yml if diff with config.Services
 	if !reflect.DeepEqual(globalConfig.Services, localConfig.Services) {
-		err = os.WriteFile("/assets/config.yml", d, 0600)
+		err = os.WriteFile(configPath, d, 0600)
 		if err != nil {
 			logger.Error(err, "error:")
 		}
@@ -123,13 +126,6 @@ func getAllHomerServices(ctx context.Context, r *HomerServicesReconciler) (*home
 	return &listService, nil
 }
 
-// Init logger slog for json and output to stdout
-func init() {
-	opts := zap.Options{
-		Development: false,
-	}
-	logger = zap.New(zap.UseFlagOptions(&opts))
-}
 
 func mergeGroupWithSameName(g []homerv1alpha1.Group) []homerv1alpha1.Group {
 	groups := []homerv1alpha1.Group{}
@@ -161,4 +157,16 @@ func sortServicesPerItemsLength(g []homerv1alpha1.Group) []homerv1alpha1.Group {
 	}
 
 	return g
+}
+
+// Init logger slog for json and output to stdout
+func init() {
+	opts := zap.Options{
+		Development: false,
+	}
+	logger = zap.New(zap.UseFlagOptions(&opts))
+
+	if configPath == "" {
+		configPath = "/assets/config.yml"
+	}
 }
