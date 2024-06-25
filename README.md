@@ -56,10 +56,11 @@ metadata:
     app.kubernetes.io/name: homer-k8s
   name: homerservices-sample
 spec:
+  # page: Page 1 # if empty, goes to main page
   groups:
-   - name: ci
-     icon: "fas fa-code-branch"
-     items:
+    - name: ci
+      icon: "fas fa-code-branch"
+      items:
         - name: "Awesome app"
           logo: "assets/tools/sample.png"
           tagstyle: "is-success"
