@@ -101,7 +101,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	for page, _ := range pages {
 		config := globalConfig
-		config.Services = append(config.Services, groups[page]...)
+		config.Services = sortServicesPerItemsLength(mergeGroupWithSameName(append(config.Services, groups[page]...)))
 
 		for p, prettyP := range pages {
 			if p != page {
@@ -165,4 +165,36 @@ func init() {
 		Development: false,
 	}
 	logger = zap.New(zap.UseFlagOptions(&opts))
+}
+
+func mergeGroupWithSameName(g []homerv1alpha1.Group) []homerv1alpha1.Group {
+	groups := []homerv1alpha1.Group{}
+
+	for _, g1 := range g {
+		found := false
+		for i, g2 := range groups {
+			if g1.Name == g2.Name {
+				groups[i].Items = append(groups[i].Items, g1.Items...)
+				found = true
+				break
+			}
+		}
+		if !found {
+			groups = append(groups, g1)
+		}
+	}
+
+	return groups
+}
+
+func sortServicesPerItemsLength(g []homerv1alpha1.Group) []homerv1alpha1.Group {
+	for i := range g {
+		for j := range g {
+			if len(g[i].Items) < len(g[j].Items) {
+				g[i], g[j] = g[j], g[i]
+			}
+		}
+	}
+
+	return g
 }
