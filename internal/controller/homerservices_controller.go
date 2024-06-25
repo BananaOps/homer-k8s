@@ -63,20 +63,12 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	_ = log.FromContext(ctx)
 
 	// Get all CRD HomerServices
-	groups := map[string][]homerv1alpha1.Group{}
 	allServices, error := getAllHomerServices(ctx, r)
 	if error != nil {
 		fmt.Println(error, "unable to fetch HomerServicesList")
 		return ctrl.Result{}, error
 	}
-	pages := map[string]string{}
-	for _, service := range allServices.Items {
-		if _, ok := groups[service.Spec.Page]; !ok {
-			groups[service.Spec.Page] = []homerv1alpha1.Group{}
-		}
-		groups[service.Spec.Page] = append(groups[service.Spec.Page], service.Spec.Groups...)
-		pages[strings.ReplaceAll(strings.ToLower(service.Spec.Page), " ", "-")] = service.Spec.Page
-	}
+	pages, groups := splitServicesPerPage(allServices)
 
 	localConfigs := map[string]homerconfig.HomerConfig{}
 	files, _ := os.ReadDir("/assets")
@@ -140,6 +132,19 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	}
 
 	return ctrl.Result{}, nil
+}
+
+func splitServicesPerPage(allServices *homerv1alpha1.HomerServicesList) (map[string]string, map[string][]homerv1alpha1.Group) {
+	pages := map[string]string{}
+	groups := map[string][]homerv1alpha1.Group{}
+	for _, service := range allServices.Items {
+		if _, ok := groups[service.Spec.Page]; !ok {
+			groups[service.Spec.Page] = []homerv1alpha1.Group{}
+		}
+		groups[service.Spec.Page] = append(groups[service.Spec.Page], service.Spec.Groups...)
+		pages[strings.ReplaceAll(strings.ToLower(service.Spec.Page), " ", "-")] = service.Spec.Page
+	}
+	return pages, groups
 }
 
 // SetupWithManager sets up the controller with the Manager.
