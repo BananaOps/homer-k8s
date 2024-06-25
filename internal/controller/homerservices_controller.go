@@ -91,7 +91,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		logger.Error(err, "error:")
 	}
 
-	for page, _ := range pages {
+	for page := range pages {
 		config := globalConfig
 		config.Services = sortServicesPerItemsLength(mergeGroupWithSameName(append(config.Services, groups[page]...)))
 
@@ -119,7 +119,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		}
 	}
 
-	for page, _ := range localConfigs {
+	for page := range localConfigs {
 		if _, ok := pages[page]; !ok {
 			err := os.Remove("/assets/" + page + ".yml")
 			if err != nil {

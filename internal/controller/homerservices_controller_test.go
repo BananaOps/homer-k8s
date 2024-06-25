@@ -9,15 +9,15 @@ import (
 func TestHomerServicesController(t *testing.T) {
 	config := homerv1alpha1.HomerServicesList{
 		Items: []homerv1alpha1.HomerServices{
-			homerv1alpha1.HomerServices{
+			{
 				Spec: homerv1alpha1.HomerServicesSpec{
 					Page: "",
 					Groups: []homerv1alpha1.Group{
-						homerv1alpha1.Group{
+						{
 							Name: "Home",
 							Icon: "fas fa-home",
 							Items: []homerv1alpha1.Item{
-								homerv1alpha1.Item{
+								{
 									Name: "Home",
 									Icon: "fas fa-home",
 									Url:  "https://www.service1.example.com",
@@ -27,15 +27,15 @@ func TestHomerServicesController(t *testing.T) {
 					},
 				},
 			},
-			homerv1alpha1.HomerServices{
+			{
 				Spec: homerv1alpha1.HomerServicesSpec{
 					Page: "Page 1",
 					Groups: []homerv1alpha1.Group{
-						homerv1alpha1.Group{
+						{
 							Name: "Home",
 							Icon: "fas fa-home",
 							Items: []homerv1alpha1.Item{
-								homerv1alpha1.Item{
+								{
 									Name: "Home",
 									Icon: "fas fa-home",
 									Url:  "https://www.service2.example.com",
@@ -45,15 +45,15 @@ func TestHomerServicesController(t *testing.T) {
 					},
 				},
 			},
-			homerv1alpha1.HomerServices{
+			{
 				Spec: homerv1alpha1.HomerServicesSpec{
 					Page: "Page 1",
 					Groups: []homerv1alpha1.Group{
-						homerv1alpha1.Group{
+						{
 							Name: "Test",
 							Icon: "fas fa-home",
 							Items: []homerv1alpha1.Item{
-								homerv1alpha1.Item{
+								{
 									Name: "Example",
 									Icon: "fas fa-home",
 									Url:  "https://www.service3.example.com",
@@ -63,15 +63,15 @@ func TestHomerServicesController(t *testing.T) {
 					},
 				},
 			},
-			homerv1alpha1.HomerServices{
+			{
 				Spec: homerv1alpha1.HomerServicesSpec{
 					Page: "Page 2",
 					Groups: []homerv1alpha1.Group{
-						homerv1alpha1.Group{
+						{
 							Name: "Home",
 							Icon: "fas fa-home",
 							Items: []homerv1alpha1.Item{
-								homerv1alpha1.Item{
+								{
 									Name: "Home",
 									Icon: "fas fa-home",
 									Url:  "https://www.service4.example.com",
