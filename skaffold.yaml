@@ -2,7 +2,7 @@ apiVersion: skaffold/v2beta28
 kind: Config
 build:
   artifacts:
-    - image: jplanckeel/homer-k8s
+    - image: bananaops/homer-k8s
       ko: 
         main: ./cmd/
 deploy:
