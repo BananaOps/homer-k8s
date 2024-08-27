@@ -55,6 +55,9 @@ spec:
                             description: Optional color for card to set color directly
                               without custom stylesheet
                             type: string
+                          clipboard:
+                            description: Text to copy when type is clipboard
+                            type: string
                           icon:
                             description: Icon of service in homer dashboard, See https://fontawesome.com/v5/search
                               for icons options
@@ -83,6 +86,9 @@ spec:
                             type: string
                           target:
                             description: Target of the service in homer dashboard
+                            type: string
+                          type:
+                            description: Type of the service in homer dashboard
                             type: string
                           url:
                             description: Url of the service in homer dashboard

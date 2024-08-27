@@ -89,6 +89,9 @@ type Item struct {
 	Url string `json:"url,omitempty"`
 	// Target of the service in homer dashboard
 	Target string `json:"target,omitempty"`
-	// Optional color for card to set color directly without custom stylesheet
+	// Type of the service in homer dashboard. See https://github.com/bastienwirtz/homer/blob/64629742f7aec7b34e8fc9e6b83282e496c2fb74/docs/configuration.md?plain=1#L150
+    Type string `json:"type,omitempty"`
+    Clipboard string `json:"clipboard,omitempty"` 
+    // Optional color for card to set color directly without custom stylesheet
 	Background string `json:"background,omitempty"`
 }
