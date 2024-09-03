@@ -1,6 +1,6 @@
 module github.com/jplanckeel/homer-k8s
 
-go 1.23
+go 1.22.0
 
 require (
 	github.com/go-logr/logr v1.4.2
