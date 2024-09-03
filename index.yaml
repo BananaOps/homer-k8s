@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   homer-k8s:
   - apiVersion: v2
+    appVersion: 0.2.1
+    created: "2024-09-03T15:12:15.398954676Z"
+    description: A Helm chart dedicated to deploy a homer dashboard in Kubernetes
+    digest: cfbb1ae6811061f5204eb4453418da6517ade0243764bc1e25887bffab3ebe56
+    name: homer-k8s
+    type: application
+    urls:
+    - https://github.com/BananaOps/homer-k8s/releases/download/homer-k8s-0.2.1/homer-k8s-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
     appVersion: 0.2.0
     created: "2024-08-29T07:54:51.525210302Z"
     description: A Helm chart dedicated to deploy a homer dashboard in Kubernetes
@@ -71,4 +81,4 @@ entries:
     urls:
     - https://github.com/BananaOps/homer-k8s/releases/download/homer-k8s-0.1.7/homer-k8s-0.1.7.tgz
     version: 0.1.7
-generated: "2024-08-29T07:54:51.525242913Z"
+generated: "2024-09-03T15:12:15.398987297Z"
