@@ -25,6 +25,8 @@ import (
 
 // HomerServicesSpec defines the desired state of HomerServices
 type HomerServicesSpec struct {
+	// Page is the name of the page in homer dashboard
+	Page string `json:"page,omitempty"`
 
 	// Groups is a map of group for items service
 	Groups []Group `json:"groups,omitempty"`
