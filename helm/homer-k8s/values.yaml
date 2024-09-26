@@ -61,6 +61,15 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+env:
+  # - name: HOMER_CONFIG_DIR
+  #   value: "/assets"
+  #- name: HOMER_EC2_ENABLED
+  #  value: "true"
+  # - name: HOMER_EC2_PAGE_NAME
+  #   value: "ec2"
+
+
 resources:
   limits:
     cpu: 250m
