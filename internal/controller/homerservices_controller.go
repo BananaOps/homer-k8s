@@ -34,9 +34,6 @@ import (
 	homerconfig "github.com/jplanckeel/homer-k8s/pkg/config"
 )
 
-// Define config Path
-var configPath = os.Getenv("CONFIG_PATH")
-
 // Define logger
 var logger logr.Logger
 var logContext []interface{} = []interface{}{"controller", "homerservices", "controllerGroup", "homer.bananaops.io", "controllerKind", "HomerServices"}
@@ -76,6 +73,14 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	}
 
 	var localConfig homerconfig.HomerConfig
+
+	configDir := os.Getenv("HOMER_CONFIG_DIR")
+	if configDir == "" {
+		configDir = "/assets"
+	}
+
+	configPath := configDir + "/config.yml"
+
 	file, _ := os.ReadFile(configPath)
 	err := yaml.Unmarshal(file, &localConfig)
 	if err != nil {
@@ -164,8 +169,4 @@ func init() {
 		Development: false,
 	}
 	logger = zap.New(zap.UseFlagOptions(&opts))
-
-	if configPath == "" {
-		configPath = "/assets/config.yml"
-	}
 }

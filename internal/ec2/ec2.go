@@ -121,12 +121,17 @@ func HomerEc2() {
 
 	d, _ := yaml.Marshal(HomerServices)
 	
-	pageName := os.Getenv("EC2_PAGE_NAME")
+	pageName := os.Getenv("HOMER_EC2_PAGE_NAME")
 	if pageName == "" {
 		pageName = "ec2"
 	}
 
-	filename := fmt.Sprintf("./assets/%s.yml", pageName)
+	configDir := os.Getenv("HOMER_CONFIG_DIR")
+	if configDir == "" {
+		configDir = "/assets"
+	}
+
+	filename := fmt.Sprintf("%s/%s.yml", configDir, pageName)
 	err := os.WriteFile(filename, d, 0600)
 	if err != nil {
 		log.Fatal(err)
