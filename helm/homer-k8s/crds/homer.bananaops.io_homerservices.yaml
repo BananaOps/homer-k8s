@@ -39,15 +39,7 @@ spec:
           spec:
             description: HomerServicesSpec defines the desired state of HomerServices
             properties:
-              filters:
-                additionalProperties:
-                  type: string
-                description: Filters for ec2 discover for homer services
-                type: object
-              page:
-                description: Page to load config in other file
-                type: string
-              services:
+              groups:
                 description: Groups is a map of group for items service
                 items:
                   properties:
@@ -108,9 +100,6 @@ spec:
                       type: string
                   type: object
                 type: array
-              type:
-                description: Type kubernetes or ec2 to discover homer services
-                type: string
             type: object
           status:
             description: HomerServicesStatus defines the observed state of HomerServices

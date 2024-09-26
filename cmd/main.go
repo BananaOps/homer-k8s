@@ -76,8 +76,10 @@ func main() {
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 
-	go ec2.ControllerEc2()
-
+	if os.Getenv("EC2_ENABLED") == "true" {
+		go ec2.ControllerEc2()
+	}
+	
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
 	// if the enable-http2 flag is false (the default), http/2 should be disabled
