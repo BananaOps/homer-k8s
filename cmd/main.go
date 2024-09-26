@@ -36,7 +36,10 @@ import (
 
 	homerbananaopsiov1alpha1 "github.com/jplanckeel/homer-k8s/api/v1alpha1"
 	"github.com/jplanckeel/homer-k8s/internal/controller"
+
 	//+kubebuilder:scaffold:imports
+
+	ec2 "github.com/jplanckeel/homer-k8s/internal/ec2"
 )
 
 var (
@@ -72,6 +75,8 @@ func main() {
 
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
+
+	go ec2.ControllerEc2()
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
