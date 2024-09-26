@@ -1,26 +1,40 @@
-package main
+package ec2
 
 import (
 	"context"
 	"fmt"
 	"log"
+	"os"
+	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/go-logr/logr"
+	"gopkg.in/yaml.v2"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+
+	homerv1alpha1 "github.com/jplanckeel/homer-k8s/api/v1alpha1"
 )
 
+// Define logger
+var logger logr.Logger
+var logContext []interface{} = []interface{}{"controller", "homerservices", "controllerGroup", "homer.bananaops.io", "controllerKind", "HomerServices"}
 
-type Item struct {
-	Name string
+var quit = make(chan struct{})
+
+type Instance struct {
+	Name             string
 	PrivateIpAddress string
-	InstanceId string
-	Tag string `json:"tag,omitempty"`
+	InstanceId       string
 }
 
+type HomerServices struct {
+	Services []homerv1alpha1.Group `json:"services,omitempty"`
+}
 
-func discoverEC2Instances() {
+func discoverEC2Instances() []homerv1alpha1.Group {
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
@@ -51,30 +65,78 @@ func discoverEC2Instances() {
 		log.Fatalf("failed to describe instances, %v", err)
 	}
 
+	var listInstances []Instance
+
 	// Parcourir les réservations et les instances pour extraire les informations souhaitées
 	for _, reservation := range result.Reservations {
 		for _, instance := range reservation.Instances {
 
+			// Récupérer le nom de l'instance à partir des tags
+			instanceName := "N/A"
+			for _, tag := range instance.Tags {
+				if *tag.Key == "Name" {
+					instanceName = *tag.Value
+					break
+				}
+			}
 
-            // Récupérer le nom de l'instance à partir des tags
-            instanceName := "N/A"
-            for _, tag := range instance.Tags {
-                if *tag.Key == "Name" {
-                    instanceName = *tag.Value
-                    break
-                }
-            }
-
-			fmt.Printf("Instance ID: %s, State: %s Private IP: %s %s\n",
-				 *instance.InstanceId, 
-				  instance.State.Name,
-				  *instance.PrivateIpAddress,
-				  instanceName,
-				)
+			listInstances = append(listInstances, Instance{
+				Name:             instanceName,
+				PrivateIpAddress: *instance.PrivateIpAddress,
+				InstanceId:       *instance.InstanceId,
+			})
 		}
+	}
+
+	var homerGroups = make([]homerv1alpha1.Group, 0, len(listInstances))
+
+	for _, instance := range listInstances {
+		homerGroups = append(homerGroups, homerv1alpha1.Group{
+			Name: instance.InstanceId,
+			Items: []homerv1alpha1.Item{
+				{
+					Name:     instance.PrivateIpAddress,
+					Icon:     "fa-solid fa-server",
+					Url:      fmt.Sprintf("http://%s", instance.PrivateIpAddress),
+					SubTitle: instance.Name,
+				},
+			},
+		},
+		)
+	}
+
+	return homerGroups
+}
+
+func HomerEc2() {
+
+	var HomerServices HomerServices
+	ec2group := discoverEC2Instances()
+
+	HomerServices.Services = ec2group
+
+	d, _ := yaml.Marshal(HomerServices)
+	err := os.WriteFile("/assets/recette.yml", d, 0600)
+	if err != nil {
+		log.Fatal(err)
+	}
+	logger.Info("config recette updated")
+}
+
+func ControllerEc2() {
+	logger.Info("controller ec2 running...")
+	// Créer un ticker qui déclenche toutes les 30 secondes
+	interval := time.NewTicker(30 * time.Second)
+	for range interval.C {
+		HomerEc2()
 	}
 }
 
-func main() {
-	discoverEC2Instances()
+// Init logger slog for json and output to stdout
+func init() {
+	opts := zap.Options{
+		Development: false,
+	}
+	logger = zap.New(zap.UseFlagOptions(&opts))
+
 }
