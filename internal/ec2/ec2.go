@@ -48,7 +48,7 @@ func discoverEC2Instances() []homerv1alpha1.Group {
 		},
 	}
 
-	// Define paramter to describe instances
+	// Define parameters to describe instances
 	input := &ec2.DescribeInstancesInput{
 		Filters: filters,
 	}
