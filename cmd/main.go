@@ -34,12 +34,12 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	homerbananaopsiov1alpha1 "github.com/jplanckeel/homer-k8s/api/v1alpha1"
-	"github.com/jplanckeel/homer-k8s/internal/controller"
+	homerbananaopsiov1alpha1 "github.com/BananaOps/homer-k8s/api/v1alpha1"
+	"github.com/BananaOps/homer-k8s/internal/controller"
 
 	//+kubebuilder:scaffold:imports
 
-	ec2 "github.com/jplanckeel/homer-k8s/internal/ec2"
+	ec2 "github.com/BananaOps/homer-k8s/internal/ec2"
 )
 
 var (

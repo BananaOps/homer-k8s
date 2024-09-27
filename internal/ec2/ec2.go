@@ -15,14 +15,11 @@ import (
 	"gopkg.in/yaml.v2"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	homerv1alpha1 "github.com/jplanckeel/homer-k8s/api/v1alpha1"
+	homerv1alpha1 "github.com/BananaOps/homer-k8s/api/v1alpha1"
 )
 
 // Define logger
 var logger logr.Logger
-var logContext []interface{} = []interface{}{"controller", "homerservices", "controllerGroup", "homer.bananaops.io", "controllerKind", "HomerServices"}
-
-var quit = make(chan struct{})
 
 type Instance struct {
 	Name             string
@@ -51,7 +48,7 @@ func discoverEC2Instances() []homerv1alpha1.Group {
 		},
 	}
 
-	// DDefine paramter to describe instances
+	// Define paramter to describe instances
 	input := &ec2.DescribeInstancesInput{
 		Filters: filters,
 	}
@@ -120,7 +117,7 @@ func HomerEc2() {
 	HomerServices.Services = ec2group
 
 	d, _ := yaml.Marshal(HomerServices)
-	
+
 	pageName := os.Getenv("HOMER_EC2_PAGE_NAME")
 	if pageName == "" {
 		pageName = "ec2"

@@ -6,7 +6,7 @@ domain: homer.bananaops.io
 layout:
 - go.kubebuilder.io/v4
 projectName: homer-k8s
-repo: github.com/jplanckeel/homer-k8s
+repo: github.com/BananaOps/homer-k8s
 resources:
 - api:
     crdVersion: v1
@@ -14,6 +14,6 @@ resources:
   controller: true
   domain: homer.bananaops.io
   kind: HomerServices
-  path: github.com/jplanckeel/homer-k8s/api/v1alpha1
+  path: github.com/BananaOps/homer-k8s/api/v1alpha1
   version: v1alpha1
 version: "3"

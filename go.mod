@@ -1,4 +1,4 @@
-module github.com/jplanckeel/homer-k8s
+module github.com/BananaOps/homer-k8s
 
 go 1.22.0
 
