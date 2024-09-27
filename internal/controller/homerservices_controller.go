@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 
 	"gopkg.in/yaml.v3"
@@ -81,7 +82,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	configPath := configDir + "/config.yml"
 
-	file, _ := os.ReadFile(configPath)
+	file, _ := os.ReadFile(filepath.Clean(configPath))
 	err := yaml.Unmarshal(file, &localConfig)
 	if err != nil {
 		logger.Error(err, "error:")

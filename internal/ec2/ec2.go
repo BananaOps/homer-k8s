@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -128,8 +129,8 @@ func HomerEc2() {
 		configDir = "/assets"
 	}
 
-	filename := fmt.Sprintf("%s/%s.yml", configDir, pageName)
-	err := os.WriteFile(filename, d, 0600)
+	filePath := fmt.Sprintf("%s/%s.yml", configDir, pageName)
+	err := os.WriteFile(filepath.Clean(filePath), d, 0600)
 	if err != nil {
 		log.Fatal(err)
 	}
