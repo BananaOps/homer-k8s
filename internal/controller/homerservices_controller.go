@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 
 	"gopkg.in/yaml.v3"
@@ -29,9 +30,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
+	homerv1alpha1 "github.com/BananaOps/homer-k8s/api/v1alpha1"
+	homerconfig "github.com/BananaOps/homer-k8s/pkg/config"
 	"github.com/go-logr/logr"
-	homerv1alpha1 "github.com/jplanckeel/homer-k8s/api/v1alpha1"
-	homerconfig "github.com/jplanckeel/homer-k8s/pkg/config"
 )
 
 // Define logger
@@ -73,7 +74,15 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	}
 
 	var localConfig homerconfig.HomerConfig
-	file, _ := os.ReadFile("/assets/config.yml")
+
+	configDir := os.Getenv("HOMER_CONFIG_DIR")
+	if configDir == "" {
+		configDir = "/assets"
+	}
+
+	configPath := configDir + "/config.yml"
+
+	file, _ := os.ReadFile(filepath.Clean(configPath))
 	err := yaml.Unmarshal(file, &localConfig)
 	if err != nil {
 		logger.Error(err, "error:")
@@ -95,7 +104,7 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	// Update config.yml if diff with config.Services
 	if !reflect.DeepEqual(globalConfig.Services, localConfig.Services) {
-		err = os.WriteFile("/assets/config.yml", d, 0600)
+		err = os.WriteFile(configPath, d, 0600)
 		if err != nil {
 			logger.Error(err, "error:")
 		}
@@ -121,14 +130,6 @@ func getAllHomerServices(ctx context.Context, r *HomerServicesReconciler) (*home
 	}
 
 	return &listService, nil
-}
-
-// Init logger slog for json and output to stdout
-func init() {
-	opts := zap.Options{
-		Development: false,
-	}
-	logger = zap.New(zap.UseFlagOptions(&opts))
 }
 
 func mergeGroupWithSameName(g []homerv1alpha1.Group) []homerv1alpha1.Group {
@@ -161,4 +162,12 @@ func sortServicesPerItemsLength(g []homerv1alpha1.Group) []homerv1alpha1.Group {
 	}
 
 	return g
+}
+
+// Init logger slog for json and output to stdout
+func init() {
+	opts := zap.Options{
+		Development: false,
+	}
+	logger = zap.New(zap.UseFlagOptions(&opts))
 }

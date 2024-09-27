@@ -2,7 +2,7 @@ apiVersion: skaffold/v2beta28
 kind: Config
 build:
   artifacts:
-    - image: jplanckeel/homer-k8s
+    - image: BananaOps/homer-k8s
       ko: 
         main: ./cmd/
 deploy:
@@ -10,9 +10,9 @@ deploy:
     releases:
       - name: homer-k8s
         chartPath: helm/homer-k8s
-        namespace: homer
+        namespace: default
         createNamespace: true
-        #artifactOverrides:
-        #  image: jplanckeel/homer-k8s
-        #imageStrategy:
-        #  helm: {}
+        artifactOverrides:
+          image: BananaOps/homer-k8s
+        imageStrategy:
+          helm: {}

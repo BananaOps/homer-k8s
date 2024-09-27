@@ -36,6 +36,7 @@ This project in to order to facilite the deployment in Kubernetes Cluster with d
 - [x] CRDs to define services
 - [x] Helm Chart to deploy homer
 - [x] Manage homer config in helm values
+- [x] EC2 Discovery to add ec2 page
 
 ## Getting Started 🚀
 
@@ -111,7 +112,6 @@ skaffold run
 
 
 ```bash
-```sh
 helm repo add bananaops https://bananaops.github.io/homer-k8s/
 helm repo update bananaops
 
@@ -122,6 +122,48 @@ helm install homer bananaops/homer-k8s
 wget https://raw.githubusercontent.com/bananaops/homer-k8s/main/helm/homer-k8s/values.yaml
 # edit values.yaml
 helm install homer bananaops/homer-k8s -f values.yaml
+```
+
+## EC2 Discovery 
+
+This feature discover all instance in AWS account and feed a page ec2.yml with link IP and link AWS Instance detail.
+
+Need token to describe EC2 instance or EKS IAM Role Service Account.
+
+### IAM Policy
+
+Need to create an IAM Policy to describe All EC2 instances
+
+```
+{
+    "Statement": [
+        {
+            "Action": "ec2:DescribeInstances",
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ],
+    "Version": "2012-10-17"
+}
+```
+
+### Enable Feature 
+
+In values.yaml add env HOMER_EC2_ENABLED to true.
+
+```bash
+env:
+  - name: HOMER_EC2_ENABLED
+    value: "true"
+```
+
+In EKS add annotation for IAM Role. 
+
+```bash
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::{{ AWS_ACCOUNT}}:role/{{ AWS_ROLE }}
 ```
 
 

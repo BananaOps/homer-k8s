@@ -1,7 +1,7 @@
 package config
 
 import (
-	homerv1alpha1 "github.com/jplanckeel/homer-k8s/api/v1alpha1"
+	homerv1alpha1 "github.com/BananaOps/homer-k8s/api/v1alpha1"
 )
 
 type HomerConfig struct {
