@@ -3,7 +3,7 @@ module github.com/BananaOps/homer-k8s
 go 1.22.0
 
 require (
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.179.2
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.198.1
 	github.com/go-logr/logr v1.4.2
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.31.0
