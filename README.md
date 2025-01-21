@@ -37,6 +37,7 @@ This project in to order to facilite the deployment in Kubernetes Cluster with d
 - [x] Helm Chart to deploy homer
 - [x] Manage homer config in helm values
 - [x] EC2 Discovery to add ec2 page
+- [x] Multi-arch support (amd64, arm64)
 
 ## Getting Started 🚀
 
