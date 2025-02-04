@@ -65,9 +65,8 @@ spec:
         - name: {{ .Chart.Name }}-dashboard
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          #image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          image: "b4bz/homer:latest"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.homer.image.repository }}:{{ .Values.homer.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.homer.image.pullPolicy }}
           ports:
             - name: dashboard
               containerPort: {{ .Values.service.port }}
