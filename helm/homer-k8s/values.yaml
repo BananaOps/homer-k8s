@@ -109,7 +109,12 @@ tolerations: []
 affinity: {}
 
 
-homer: 
+homer:
+  # -- Homer image
+  image:
+    repository: b4bz/homer
+    pullPolicy: IfNotPresent
+    tag: latest
   # -- Structured homer configuration, takes precedence over `homer.config`
   structuredConfig: {}
   config: |
