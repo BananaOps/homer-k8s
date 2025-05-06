@@ -10,8 +10,14 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 4
+    commit_message:
+      prefix: "deps"
+      include_scope: false
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 2
+    commit_message:
+      prefix: "chore"
+      include_scope: true
