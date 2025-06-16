@@ -32,7 +32,7 @@ jobs:
           sed -i '/^appVersion:/c\appVersion: "${{steps.version_tag.outputs.tag_chart}}"' ./helm/homer-k8s/Chart.yaml
 
       - if: steps.tag.outputs.value != ''
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "ci: bump charts to ${{steps.version_tag.outputs.tag}}"
           branch: main
