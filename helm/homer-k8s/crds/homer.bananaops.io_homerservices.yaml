@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.14.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   name: homerservices.homer.bananaops.io
 spec:
   group: homer.bananaops.io
@@ -51,19 +51,69 @@ spec:
                       description: Items is map of services in homer dashboard
                       items:
                         properties:
-                          background:
-                            description: Optional color for card to set color directly
-                              without custom stylesheet
+                          apiVersion:
+                            description: Optional API version used to fetch service
+                              data when necessary.
                             type: string
+                          apikey:
+                            description: Optional API key used to fetch service data
+                              when necessary.
+                            type: string
+                          background:
+                            description: Optional background parameter
+                            type: string
+                          checkInterval:
+                            description: Optional check interval in seconds to fetch
+                              service data when necessary.
+                            type: integer
                           clipboard:
                             description: Text to copy when type is clipboard
                             type: string
+                          display:
+                            description: text or bar. Default to text.
+                            type: string
+                          downloadInterval:
+                            description: Optional download interval
+                            type: integer
+                          endpoint:
+                            description: 'Optional: alternative base URL used to fetch
+                              service data when necessary.'
+                            type: string
+                          environments:
+                            description: Optional environments variables used to fetch
+                              service data when necessary.
+                            items:
+                              type: string
+                            type: array
                           icon:
                             description: Icon of service in homer dashboard, See https://fontawesome.com/v5/search
                               for icons options
                             type: string
+                          interval:
+                            description: Optional interval to fetch service data when
+                              necessary.
+                            type: integer
+                          items:
+                            description: Displays Home Assistant instance status,
+                              version, location, and entity count
+                            items:
+                              type: string
+                            type: array
                           keywords:
                             description: Keywords of the service in homer dashboard
+                            type: string
+                          libraryType:
+                            description: 'Optional: library type for emby/jellyfin'
+                            type: string
+                          limit:
+                            description: Optional limit for number of items to fetch
+                              when necessary.
+                            type: integer
+                          location:
+                            description: Optional location for weather
+                            type: string
+                          locationId:
+                            description: Optional location id for weather
                             type: string
                           logo:
                             description: A path to an image can also be provided.
@@ -72,6 +122,27 @@ spec:
                             type: string
                           name:
                             description: Name of service in homer dashboard
+                            type: string
+                          password:
+                            description: Optional password used to fetch service data
+                              when necessary.
+                            type: string
+                          query:
+                            description: Optional query used to fetch service data
+                              when necessary.
+                            type: string
+                          rateInterval:
+                            description: Optional rate interval
+                            type: integer
+                          separator:
+                            description: Separator for home assistant
+                            type: string
+                          slug:
+                            description: Optional slug used to fetch service data
+                              when necessary.
+                            type: string
+                          style:
+                            description: Either status or counter for miniflux
                             type: string
                           subtitle:
                             description: SubTitle of the service in homer dashboard
@@ -87,11 +158,33 @@ spec:
                           target:
                             description: Target of the service in homer dashboard
                             type: string
+                          token:
+                            description: Optional token used to fetch service data
+                              when necessary.
+                            type: string
+                          torrentInterval:
+                            description: Optional torrent interval
+                            type: integer
                           type:
                             description: Type of the service in homer dashboard
                             type: string
+                          units:
+                            description: Optional units for weather
+                            type: string
+                          updateInterval:
+                            description: Optional update interval in seconds to fetch
+                              service data when necessary.
+                            type: integer
                           url:
                             description: Url of the service in homer dashboard
+                            type: string
+                          username:
+                            description: Optional username used to fetch service data
+                              when necessary.
+                            type: string
+                          xmlrpc:
+                            description: Optional xmlrpc used to fetch service data
+                              when necessary.
                             type: string
                         type: object
                       type: array
