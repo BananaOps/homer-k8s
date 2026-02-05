@@ -60,7 +60,8 @@ spec:
                               when necessary.
                             type: string
                           background:
-                            description: Optional background parameter
+                            description: Optional color for card to set color directly
+                              without custom stylesheet
                             type: string
                           checkInterval:
                             description: Optional check interval in seconds to fetch
@@ -103,7 +104,7 @@ spec:
                             description: Keywords of the service in homer dashboard
                             type: string
                           libraryType:
-                            description: 'Optional: library type for emby/jellyfin'
+                            description: Optional library type for emby/jellyfin
                             type: string
                           limit:
                             description: Optional limit for number of items to fetch
@@ -135,14 +136,14 @@ spec:
                             description: Optional rate interval
                             type: integer
                           separator:
-                            description: Separator for home assistant
+                            description: Optional separator for home assistant
                             type: string
                           slug:
                             description: Optional slug used to fetch service data
                               when necessary.
                             type: string
                           style:
-                            description: Either status or counter for miniflux
+                            description: Optional - either status or counter for miniflux
                             type: string
                           subtitle:
                             description: SubTitle of the service in homer dashboard

@@ -93,7 +93,7 @@ type Item struct {
 	Type string `json:"type,omitempty"`
 	// Text to copy when type is clipboard
 	Clipboard string `json:"clipboard,omitempty"`
-	// Optional background parameter
+	// Optional color for card to set color directly without custom stylesheet
 	Background string `json:"background,omitempty"`
 	// Optional API key used to fetch service data when necessary.
 	ApiKey string `json:"apikey,omitempty"`
@@ -101,11 +101,11 @@ type Item struct {
 	ApiVersion string `json:"apiVersion,omitempty"`
 	// Optional check interval in seconds to fetch service data when necessary.
 	CheckInterval int `json:"checkInterval,omitempty"`
-	// text or bar. Default to text.
+	// Optional - text or bar. Default to text.
 	Display string `json:"display,omitempty"`
 	// Optional download interval
 	DownloadInterval int `json:"downloadInterval,omitempty"`
-	// Optional: alternative base URL used to fetch service data when necessary.
+	// Optional alternative base URL used to fetch service data when necessary.
 	Endpoint string `json:"endpoint,omitempty"`
 	// Optional environments variables used to fetch service data when necessary.
 	Environments []string `json:"environments,omitempty"`
@@ -113,7 +113,7 @@ type Item struct {
 	Interval int `json:"interval,omitempty"`
 	// Displays Home Assistant instance status, version, location, and entity count
 	Items []string `json:"items,omitempty"`
-	// Optional: library type for emby/jellyfin
+	// Optional library type for emby/jellyfin
 	LibraryType string `json:"libraryType,omitempty"`
 	// Optional limit for number of items to fetch when necessary.
 	Limit int `json:"limit,omitempty"`
@@ -127,11 +127,11 @@ type Item struct {
 	Query string `json:"query,omitempty"`
 	// Optional rate interval
 	RateInterval int `json:"rateInterval,omitempty"`
-	// Separator for home assistant
+	// Optional separator for home assistant
 	Separator string `json:"separator,omitempty"`
 	// Optional slug used to fetch service data when necessary.
 	Slug string `json:"slug,omitempty"`
-	// Either status or counter for miniflux
+	// Optional - either status or counter for miniflux
 	Style string `json:"style,omitempty"`
 	// Optional token used to fetch service data when necessary.
 	Token string `json:"token,omitempty"`
