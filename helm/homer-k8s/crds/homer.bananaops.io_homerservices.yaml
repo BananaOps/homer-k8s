@@ -71,14 +71,14 @@ spec:
                             description: Text to copy when type is clipboard
                             type: string
                           display:
-                            description: text or bar. Default to text.
+                            description: Optional - text or bar. Default to text.
                             type: string
                           downloadInterval:
                             description: Optional download interval
                             type: integer
                           endpoint:
-                            description: 'Optional: alternative base URL used to fetch
-                              service data when necessary.'
+                            description: Optional alternative base URL used to fetch
+                              service data when necessary.
                             type: string
                           environments:
                             description: Optional environments variables used to fetch
