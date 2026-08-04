@@ -9,11 +9,11 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1 # 3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Get tag name
         id: tag
-        uses: haya14busa/action-cond@v1
+        uses: haya14busa/action-cond@v1.2.1 # 94f77f7a80cd666cb3155084e428254fea4281fd
         with:
           cond: "${{ startsWith(github.ref, 'refs/tags/') }}"
           if_true: ${{ github.ref }}
@@ -32,34 +32,34 @@ jobs:
           sed -i '/^appVersion:/c\appVersion: "${{steps.version_tag.outputs.tag_chart}}"' ./helm/homer-k8s/Chart.yaml
 
       - if: steps.tag.outputs.value != ''
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7.2.0 # 4a55954c782fc1ea30b9056cd3e7a2b40ca8887d
         with:
           commit_message: "ci: bump charts to ${{steps.version_tag.outputs.tag}}"
           branch: main
   
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7.0.0 # b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
           go-version: stable
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4.5.1 # abd2ef45e78c5afb21d64d4ca52ee8550d9572c7
         with:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{ secrets.DOCKER_AUTH_TOKEN }}
 
-      - uses: imjasonh/setup-ko@v0.9
+      - uses: imjasonh/setup-ko@v0.10 # 61b4d1d396f5b2e7d6bb6fefdce3dc38d1a13445
 
       - name: Build and Push on Docker Hub  
         env:
           KO_DOCKER_REPO: bananaops/homer-k8s
-        run: ko publish ./cmd --bare --tags latest,${{steps.version_tag.outputs.tag}}
+        run: ko publish ./cmd --bare --tags latest,${{steps.version_tag.outputs.tag}} --platform=linux/amd64,linux/arm64
 
   release-helm: 
     needs: [release]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} )"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1 # 3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
           ref: 'main'
@@ -68,13 +68,14 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5.0.1 # 9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1
+        uses: helm/chart-releaser-action@v1.7.0 # cae68fefc6b5f367a0275617c9f83181ba54714f
         with:
           charts_dir: helm
         env:
