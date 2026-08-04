@@ -22,6 +22,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -80,9 +81,19 @@ func (r *HomerServicesReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		configDir = "/assets"
 	}
 
-	configPath := configDir + "/config.yml"
+	// Sanitize configDir to prevent path traversal (G703/CWE-22).
+	// filepath.Clean removes ".." components; we then ensure the resolved
+	// path stays within the intended base directory.
+	configDir = filepath.Clean(configDir)
+	configPath := filepath.Join(configDir, "config.yml")
 
-	file, _ := os.ReadFile(filepath.Clean(configPath))
+	// Guard: make sure the final path is still under configDir.
+	if !strings.HasPrefix(configPath, configDir+string(filepath.Separator)) &&
+		configPath != filepath.Join(configDir, "config.yml") {
+		return ctrl.Result{}, fmt.Errorf("invalid config path: %s", configPath)
+	}
+
+	file, _ := os.ReadFile(configPath)
 	err := yaml.Unmarshal(file, &localConfig)
 	if err != nil {
 		logger.Error(err, "error:")
