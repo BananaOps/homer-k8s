@@ -52,5 +52,12 @@ type Link struct {
 	Name   string `yaml:"name"`
 	Icon   string `yaml:"icon"`
 	URL    string `yaml:"url"`
-	Target string `yaml:"target"`
+	Target string `yaml:"target,omitempty"`
+}
+
+// HomerPageConfig represents the content of a Homer page file (e.g. page2.yml).
+// A page file only requires the services section; Homer inherits all other
+// settings (colors, footer, links …) from the main config.yml.
+type HomerPageConfig struct {
+	Services []homerv1alpha1.Group `yaml:"services,omitempty"`
 }
