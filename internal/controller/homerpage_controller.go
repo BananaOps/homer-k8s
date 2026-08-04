@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -58,33 +59,34 @@ func (r *HomerPageReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		"namespace", req.Namespace,
 	}
 
-	// Resolve and sanitize the config directory (path-traversal guard, CWE-22).
+	// Resolve the config directory.
 	configDir := os.Getenv("HOMER_CONFIG_DIR")
 	if configDir == "" {
 		configDir = "/assets"
 	}
 	configDir = filepath.Clean(configDir)
 
+	// Open a scoped root for the config directory (Go >=1.24, CWE-22).
+	// All subsequent file operations go through this root handle, so the kernel
+	// rejects any path that escapes the directory — even via symlinks or ".." components.
+	root, err := os.OpenRoot(configDir)
+	if err != nil {
+		return ctrl.Result{}, fmt.Errorf("cannot open config root %q: %w", configDir, err)
+	}
+	defer root.Close()
+
 	// --- Fetch the HomerPage resource ---
 	var homerPage homerv1alpha1.HomerPage
 	if err := r.Get(ctx, req.NamespacedName, &homerPage); err != nil {
-		// If the resource no longer exists there is nothing to reconcile.
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	pageName := homerPage.Spec.PageName
 
-	// Validate pageName before using it in a file path (defence-in-depth, the
-	// CRD pattern validation is the primary guard but we double-check here).
+	// Defence-in-depth: the CRD regex is the primary guard, but we also reject
+	// names containing path-sensitive characters before they reach the filesystem.
 	if strings.ContainsAny(pageName, "/\\..") || pageName == "" {
 		return ctrl.Result{}, fmt.Errorf("invalid pageName %q: must not contain path separators or dots", pageName)
-	}
-
-	pageFile := filepath.Join(configDir, pageName+".yml")
-
-	// Extra guard: ensure the resolved path stays within configDir.
-	if !strings.HasPrefix(pageFile, configDir+string(filepath.Separator)) {
-		return ctrl.Result{}, fmt.Errorf("page file path %q is outside config directory %q", pageFile, configDir)
 	}
 
 	// --- Build the page config ---
@@ -98,18 +100,19 @@ func (r *HomerPageReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, err
 	}
 
-	// Read the existing page file to detect changes.
-	existingPageBytes, _ := os.ReadFile(pageFile)
+	// Read the existing page file through the scoped root to detect changes.
+	pageFileName := pageName + ".yml"
+	existingPageBytes, _ := rootReadFile(root, pageFileName)
 	if !reflect.DeepEqual(existingPageBytes, pageBytes) {
-		if err := os.WriteFile(pageFile, pageBytes, 0600); err != nil {
+		if err := rootWriteFile(root, pageFileName, pageBytes, 0600); err != nil {
 			logger.Error(err, "failed to write page file", pageLogCtx...)
 			return ctrl.Result{}, err
 		}
-		logger.Info("Homer Page file updated", append(pageLogCtx, "file", pageFile)...)
+		logger.Info("Homer Page file updated", append(pageLogCtx, "file", filepath.Join(configDir, pageFileName))...)
 	}
 
 	// --- autoLink: keep config.yml links in sync ---
-	if err := r.reconcileAutoLink(ctx, configDir, pageLogCtx); err != nil {
+	if err := r.reconcileAutoLink(ctx, root, configDir, pageLogCtx); err != nil {
 		return ctrl.Result{}, err
 	}
 
@@ -126,7 +129,8 @@ func (r *HomerPageReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 // reconcileAutoLink reads all HomerPage resources that have AutoLink=true and
 // rewrites the `links` section of config.yml accordingly. Links that were
 // added by other means (i.e., present in global_config.yml) are preserved.
-func (r *HomerPageReconciler) reconcileAutoLink(ctx context.Context, configDir string, logCtx []interface{}) error {
+// All file access goes through the scoped root handle (CWE-22).
+func (r *HomerPageReconciler) reconcileAutoLink(ctx context.Context, root *os.Root, configDir string, logCtx []interface{}) error {
 	// Collect all HomerPages with autoLink enabled.
 	var pageList homerv1alpha1.HomerPageList
 	if err := r.List(ctx, &pageList); err != nil {
@@ -151,40 +155,33 @@ func (r *HomerPageReconciler) reconcileAutoLink(ctx context.Context, configDir s
 		}
 	}
 
-	// Read the current config.yml.
-	configPath := filepath.Join(configDir, "config.yml")
-	if !strings.HasPrefix(configPath, configDir+string(filepath.Separator)) {
-		return fmt.Errorf("invalid config path: %s", configPath)
-	}
-
+	// global_config.yml lives outside the scoped root (/config/), read it directly.
+	// Its path is hard-coded and not user-controlled, so os.ReadFile is safe here.
 	var globalConfig homerconfig.HomerConfig
-	rawConfig, _ := os.ReadFile("/config/global_config.yml")
+	rawConfig, _ := os.ReadFile("/config/global_config.yml") // #nosec G304 — fixed path
 	if err := yaml.Unmarshal(rawConfig, &globalConfig); err != nil {
 		logger.Error(err, "failed to unmarshal global_config.yml", logCtx...)
 	}
 
+	// Read config.yml through the scoped root.
 	var currentConfig homerconfig.HomerConfig
-	rawCurrent, _ := os.ReadFile(configPath)
+	rawCurrent, _ := rootReadFile(root, "config.yml")
 	if err := yaml.Unmarshal(rawCurrent, &currentConfig); err != nil {
 		logger.Error(err, "failed to unmarshal config.yml", logCtx...)
 	}
 
 	// Build the new links list: keep non-auto links, then add/update auto links.
-	// A link is considered "non-auto" if its url does not match any current or
-	// desired auto-managed url (i.e., does not start with "#").
 	autoURLs := map[string]bool{}
 	for url := range desiredLinks {
 		autoURLs[url] = true
 	}
-	// Also consider urls of pages that no longer have autoLink (so we can remove them).
+	// Also track urls of pages that no longer have autoLink (so we can remove them).
 	for _, l := range currentConfig.Links {
 		if strings.HasPrefix(l.URL, "#") {
 			autoURLs[l.URL] = true
 		}
 	}
 
-	// Start from global_config links as the base, then preserve manually-added
-	// links from config.yml that are not in the auto-managed set.
 	newLinks := make([]homerconfig.Link, 0, len(globalConfig.Links)+len(desiredLinks))
 	newLinks = append(newLinks, globalConfig.Links...)
 	for _, l := range currentConfig.Links {
@@ -192,14 +189,11 @@ func (r *HomerPageReconciler) reconcileAutoLink(ctx context.Context, configDir s
 			newLinks = append(newLinks, l)
 		}
 	}
-	// Append the desired auto-managed links.
 	for _, l := range desiredLinks {
 		newLinks = append(newLinks, l)
 	}
 
-	// Merge services from global_config into currentConfig.
 	currentConfig.Links = newLinks
-	// Preserve non-links fields from global_config where currentConfig is empty.
 	mergeGlobalIntoConfig(&currentConfig, &globalConfig)
 
 	newBytes, err := yaml.Marshal(currentConfig)
@@ -208,13 +202,41 @@ func (r *HomerPageReconciler) reconcileAutoLink(ctx context.Context, configDir s
 	}
 
 	if !reflect.DeepEqual(rawCurrent, newBytes) {
-		if err := os.WriteFile(configPath, newBytes, 0600); err != nil {
+		// Write config.yml through the scoped root.
+		if err := rootWriteFile(root, "config.yml", newBytes, 0600); err != nil {
 			return err
 		}
 		logger.Info("Homer config.yml links updated", logCtx...)
 	}
 
 	return nil
+}
+
+// rootReadFile reads a file by name through an os.Root handle.
+// The name must be a plain filename (no path separators); the root handle
+// ensures the access cannot escape the configured directory.
+func rootReadFile(root *os.Root, name string) ([]byte, error) {
+	f, err := root.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	return io.ReadAll(f)
+}
+
+// rootWriteFile writes data to a file by name through an os.Root handle,
+// creating or truncating it. Permissions are set to perm.
+func rootWriteFile(root *os.Root, name string, data []byte, perm os.FileMode) error {
+	f, err := root.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
+	if err != nil {
+		return err
+	}
+	_, werr := f.Write(data)
+	cerr := f.Close()
+	if werr != nil {
+		return werr
+	}
+	return cerr
 }
 
 // mergeGlobalIntoConfig copies non-zero fields from src into dst only when dst
