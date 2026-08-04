@@ -2,6 +2,17 @@
   "include-component-in-tag": true,
   "release-type": "simple",
   "separate-pull-requests": true,
+  "changelog-sections": [
+    { "type": "feat",     "section": "✨ New Features",          "hidden": false },
+    { "type": "fix",      "section": "🐛 Bug Fixes",             "hidden": false },
+    { "type": "perf",     "section": "⚡ Performance Improvements","hidden": false },
+    { "type": "revert",   "section": "⏪ Reverts",               "hidden": false },
+    { "type": "refactor", "section": "♻️ Code Refactoring",      "hidden": false },
+    { "type": "docs",     "section": "📚 Documentation",         "hidden": false },
+    { "type": "ci",       "section": "👷 CI/CD",                 "hidden": false },
+    { "type": "test",     "section": "✅ Tests",                  "hidden": false },
+    { "type": "chore",    "section": "🔧 Miscellaneous",         "hidden": false }
+  ],
   "packages": {
     ".": {
       "release-type": "go",
