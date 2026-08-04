@@ -89,9 +89,60 @@ type Item struct {
 	Url string `json:"url,omitempty"`
 	// Target of the service in homer dashboard
 	Target string `json:"target,omitempty"`
-	// Type of the service in homer dashboard. See https://github.com/bastienwirtz/homer/blob/64629742f7aec7b34e8fc9e6b83282e496c2fb74/docs/configuration.md?plain=1#L150
-	Type      string `json:"type,omitempty"`
+	// Type of the service in homer dashboard
+	Type string `json:"type,omitempty"`
+	// Text to copy when type is clipboard
 	Clipboard string `json:"clipboard,omitempty"`
 	// Optional color for card to set color directly without custom stylesheet
 	Background string `json:"background,omitempty"`
+	// Optional API key used to fetch service data when necessary.
+	ApiKey string `json:"apikey,omitempty"`
+	// Optional API version used to fetch service data when necessary.
+	ApiVersion string `json:"apiVersion,omitempty"`
+	// Optional check interval in seconds to fetch service data when necessary.
+	CheckInterval int `json:"checkInterval,omitempty"`
+	// Optional - text or bar. Default to text.
+	Display string `json:"display,omitempty"`
+	// Optional download interval
+	DownloadInterval int `json:"downloadInterval,omitempty"`
+	// Optional alternative base URL used to fetch service data when necessary.
+	Endpoint string `json:"endpoint,omitempty"`
+	// Optional environments variables used to fetch service data when necessary.
+	Environments []string `json:"environments,omitempty"`
+	// Optional interval to fetch service data when necessary.
+	Interval int `json:"interval,omitempty"`
+	// Displays Home Assistant instance status, version, location, and entity count
+	Items []string `json:"items,omitempty"`
+	// Optional library type for emby/jellyfin
+	LibraryType string `json:"libraryType,omitempty"`
+	// Optional limit for number of items to fetch when necessary.
+	Limit int `json:"limit,omitempty"`
+	// Optional location for weather
+	Location string `json:"location,omitempty"`
+	// Optional location id for weather
+	LocationId string `json:"locationId,omitempty"`
+	// Optional password used to fetch service data when necessary.
+	Password string `json:"password,omitempty"`
+	// Optional query used to fetch service data when necessary.
+	Query string `json:"query,omitempty"`
+	// Optional rate interval
+	RateInterval int `json:"rateInterval,omitempty"`
+	// Optional separator for home assistant
+	Separator string `json:"separator,omitempty"`
+	// Optional slug used to fetch service data when necessary.
+	Slug string `json:"slug,omitempty"`
+	// Optional - either status or counter for miniflux
+	Style string `json:"style,omitempty"`
+	// Optional token used to fetch service data when necessary.
+	Token string `json:"token,omitempty"`
+	// Optional torrent interval
+	TorrentInterval int `json:"torrentInterval,omitempty"`
+	// Optional units for weather
+	Units string `json:"units,omitempty"`
+	// Optional update interval in seconds to fetch service data when necessary.
+	UpdateInterval int `json:"updateInterval,omitempty"`
+	// Optional username used to fetch service data when necessary.
+	Username string `json:"username,omitempty"`
+	// Optional xmlrpc used to fetch service data when necessary.
+	Xmlrpc string `json:"xmlrpc,omitempty"`
 }
