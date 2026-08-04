@@ -73,7 +73,11 @@ func (r *HomerPageReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	if err != nil {
 		return ctrl.Result{}, fmt.Errorf("cannot open config root %q: %w", configDir, err)
 	}
-	defer root.Close()
+	defer func() {
+		if cerr := root.Close(); cerr != nil {
+			logger.Error(cerr, "failed to close config root", pageLogCtx...)
+		}
+	}()
 
 	// --- Fetch the HomerPage resource ---
 	var homerPage homerv1alpha1.HomerPage
@@ -220,8 +224,12 @@ func rootReadFile(root *os.Root, name string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
-	return io.ReadAll(f)
+	data, err := io.ReadAll(f)
+	// Always close; if both ReadAll and Close fail, return the ReadAll error.
+	if cerr := f.Close(); cerr != nil && err == nil {
+		err = cerr
+	}
+	return data, err
 }
 
 // rootWriteFile writes data to a file by name through an os.Root handle,
