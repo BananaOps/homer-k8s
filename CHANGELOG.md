@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/BananaOps/homer-k8s/compare/v0.6.0...v0.6.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* **chart:** grant homerpages to the controller ClusterRole ([#178](https://github.com/BananaOps/homer-k8s/issues/178)) ([c2c060c](https://github.com/BananaOps/homer-k8s/commit/c2c060cb5e9632fe95d1a2937c106483fb83049e))
+
 ## [0.6.0](https://github.com/BananaOps/homer-k8s/compare/v0.5.1...v0.6.0) (2026-11-04)
 
 
