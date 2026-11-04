@@ -1,0 +1,52 @@
+apiVersion: homer.bananaops.io/v1alpha1
+kind: HomerPage
+metadata:
+  labels:
+    app.kubernetes.io/name: homer-k8s
+    app.kubernetes.io/managed-by: kustomize
+  name: homerpage-sample
+spec:
+  # pageName is the name of the generated page file (without extension).
+  # Homer will load this page at "#infrastructure" (url: "#infrastructure").
+  pageName: infrastructure
+
+  # autoLink: when true, a navbar link pointing to this page is automatically
+  # added/maintained in config.yml. Defaults to false.
+  autoLink: true
+
+  # linkName is the label shown in the Homer navbar. Defaults to pageName.
+  linkName: "Infrastructure"
+
+  # linkIcon is the FontAwesome icon shown next to the navbar link.
+  linkIcon: "fas fa-server"
+
+  # groups defines the service cards shown on this page.
+  # The structure is identical to HomerServices.spec.groups.
+  groups:
+    - name: "Monitoring"
+      icon: "fas fa-chart-line"
+      items:
+        - name: "Prometheus"
+          logo: "assets/tools/prometheus.png"
+          subtitle: "Metrics collection"
+          tag: "monitoring"
+          tagstyle: "is-success"
+          url: "https://prometheus.example.com"
+          target: "_blank"
+        - name: "Grafana"
+          logo: "assets/tools/grafana.png"
+          subtitle: "Metrics dashboards"
+          tag: "monitoring"
+          tagstyle: "is-success"
+          url: "https://grafana.example.com"
+          target: "_blank"
+    - name: "Networking"
+      icon: "fas fa-network-wired"
+      items:
+        - name: "Traefik"
+          logo: "assets/tools/traefik.png"
+          subtitle: "Ingress controller"
+          tag: "network"
+          tagstyle: "is-info"
+          url: "https://traefik.example.com"
+          target: "_blank"
