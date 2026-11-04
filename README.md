@@ -23,155 +23,123 @@
 
 
 
-## About Homer-k8s 
+## About Homer-k8s
 
-Homer is a dead simple static HOMepage for your servER to keep your services on hand, from a simple yaml configuration file.
+[Homer](https://github.com/bastienwirtz/homer) is a dead simple static HOMepage for your servER, configured from a YAML file.
 
-Homer Dashboard https://github.com/bastienwirtz/homer
-
-This project in to order to facilite the deployment in Kubernetes Cluster with dynamic CRDs to define Service aand reload the configuration on each CRDs change.
+homer-k8s deploys Homer on Kubernetes and builds its configuration from CRDs: every change to a `HomerServices` or `HomerPage` resource is written to the Homer config on the fly.
 
 ## Features
 
-- [x] CRDs to define services
-- [x] Helm Chart to deploy homer
-- [x] Manage homer config in helm values
-- [x] EC2 Discovery to add ec2 page
-- [x] Multi-arch support (amd64, arm64)
-- [x] Support for custom services (smart cards)
+- [x] `HomerServices` CRD to add services to the main page
+- [x] `HomerPage` CRD to create extra pages, with optional navbar link
+- [x] Helm chart, Homer config managed in Helm values
+- [x] EC2 discovery to generate an `ec2` page
+- [x] Multi-arch images (amd64, arm64)
+- [x] Custom services (smart cards)
 
 ## Getting Started 🚀
 
-### Requirements
+### Install with Helm
 
-- [golang](https://go.dev/) >= 1.22
-- [ko-build](https://ko.build/)
-- [helm](https://helm.sh/)
+```bash
+helm repo add bananaops https://bananaops.github.io/homer-k8s/
+helm repo update bananaops
+helm install homer bananaops/homer-k8s            # defaults
+helm install homer bananaops/homer-k8s -f values.yaml  # with your values
+```
 
+The base Homer config (title, theme, links, colors...) is set in [`values.yaml`](helm/homer-k8s/values.yaml):
+`homer.config` (raw YAML), `homer.structuredConfig` (merged on top) and `homer.customCss`.
 
-### Crds HomerServices
+### HomerServices
+
+Adds service groups to the main page. Groups with the same name across resources are merged.
 
 ```yaml
 apiVersion: homer.bananaops.io/v1alpha1
 kind: HomerServices
 metadata:
-  labels:
-    app.kubernetes.io/name: homer-k8s
-  name: homerservices-sample
+  name: ci
 spec:
   groups:
-   - name: ci
-     icon: "fas fa-code-branch"
-     items:
-        - name: "Awesome app"
-          logo: "assets/tools/sample.png"
-          tagstyle: "is-success"
+    - name: ci
+      icon: "fas fa-code-branch"
+      items:
+        - name: "Jenkins"
           icon: "fab fa-jenkins"
-          subtitle: "Bookmark example"
+          subtitle: "CI server"
           tag: "app"
-          keywords: "self hosted reddit" # optional keyword used for searching purpose
-          url: "https://www.reddit.com/r/selfhosted/"
-          target: "_blank" # optional html tag target attribute
-
-          # background: red # optional color for card to set color directly without custom stylesheet
-        - name: "Another one"
-          logo: "assets/tools/sample.png"
-          subtitle: "Another application"
-          tag: "app"
-          # Optional tagstyle
           tagstyle: "is-success"
-          url: "#"
+          keywords: "build ci"   # optional, used by search
+          url: "https://jenkins.example.com"
+          target: "_blank"
 ```
 
+### HomerPage
 
-### Build 
+Creates a separate page `<pageName>.yml`, reachable at `#<pageName>`.
 
-To compile homer-k8s run this command, output a binnary in bin/event
-
-```bash
-skaffold build
+```yaml
+apiVersion: homer.bananaops.io/v1alpha1
+kind: HomerPage
+metadata:
+  name: infrastructure
+spec:
+  pageName: infrastructure
+  autoLink: true                 # add a link to the navbar
+  linkName: "Infrastructure"     # defaults to pageName
+  linkIcon: "fas fa-server"
+  groups:
+    - name: "Monitoring"
+      items:
+        - name: "Grafana"
+          url: "https://grafana.example.com"
 ```
 
-### Update Manifest
+More examples in [`samples/`](samples/).
 
-To updates manifest files : 
+## EC2 Discovery
 
-```bash
-make manifests
-```
+Lists the running EC2 instances every 30s and writes a page with, for each instance, a link to its private IP and to the AWS console.
 
-### Deploy with skaffold
+Enable it in `values.yaml`:
 
-To deploy with skaffold: 
-
-! Need to modify skafflod config
-
-```bash
-skaffold run
-```
-
-### Deploy with Helm
-
-
-```bash
-helm repo add bananaops https://bananaops.github.io/homer-k8s/
-helm repo update bananaops
-
-# install with all defaults
-helm install homer bananaops/homer-k8s
-
-# install with customisations
-wget https://raw.githubusercontent.com/bananaops/homer-k8s/main/helm/homer-k8s/values.yaml
-# edit values.yaml
-helm install homer bananaops/homer-k8s -f values.yaml
-```
-
-## EC2 Discovery 
-
-This feature discover all instance in AWS account and feed a page ec2.yml with link IP and link AWS Instance detail.
-
-Need token to describe EC2 instance or EKS IAM Role Service Account.
-
-### IAM Policy
-
-Need to create an IAM Policy to describe All EC2 instances
-
-```
-{
-    "Statement": [
-        {
-            "Action": "ec2:DescribeInstances",
-            "Effect": "Allow",
-            "Resource": "*"
-        }
-    ],
-    "Version": "2012-10-17"
-}
-```
-
-### Enable Feature 
-
-In values.yaml add env HOMER_EC2_ENABLED to true.
-
-```bash
+```yaml
 env:
   - name: HOMER_EC2_ENABLED
     value: "true"
-```
-
-In EKS add annotation for IAM Role. 
-
-```bash
+  # - name: HOMER_EC2_PAGE_NAME   # optional, defaults to "ec2"
+  #   value: "servers"
 serviceAccount:
   create: true
-  annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::{{ AWS_ACCOUNT}}:role/{{ AWS_ROLE }}
+  annotations:   # EKS IRSA, or any AWS credentials available to the pod
+    eks.amazonaws.com/role-arn: arn:aws:iam::<AWS_ACCOUNT>:role/<AWS_ROLE>
 ```
 
+Required IAM policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{ "Effect": "Allow", "Action": "ec2:DescribeInstances", "Resource": "*" }]
+}
+```
+
+## Development
+
+Requirements: [Go](https://go.dev/) >= 1.26, [ko](https://ko.build/), [Helm](https://helm.sh/), optionally [Skaffold](https://skaffold.dev/).
+
+```bash
+make build                 # build bin/manager
+make test                  # go test -race with coverage
+make lint                  # golangci-lint
+make generate manifests    # regenerate deepcopy and CRDs (helm/homer-k8s/crds) after changing api/
+skaffold run --default-repo <registry>   # build with ko and deploy the chart to the current cluster
+```
+
+PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`...): releases and the changelog are generated from them by release-please.
 
 ## Contributing
 
-Please see the [contribution guidelines](https://github.com/BananaOps/homer-k8s/blob/main/CONTRIBUTING.md) and our [code of conduct](https://github.com/BananaOps/homer-k8s/blob/main/CODE_OF_CONDUCT.md). All contributions are subject to the [Apache 2.0 open source license](https://github.com/BananaOps/homer-k8s/blob/main/LICENSE).
-
-`help wanted` issues:
-- [homer-k8s](https://github.com/BananaOps/homer-k8s/labels/help%20wanted)
+Contributions are welcome, see the [`help wanted`](https://github.com/BananaOps/homer-k8s/labels/help%20wanted) issues. All contributions are subject to the [Apache 2.0 license](LICENSE).
