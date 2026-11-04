@@ -58,91 +58,91 @@ type HomerServicesList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(&HomerServices{}, &HomerServicesList{})
+	knownTypes = append(knownTypes, &HomerServices{}, &HomerServicesList{})
 }
 
 type Group struct {
 	// Name of group in homer dashboard
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Icon of group in homer dashboard, See https://fontawesome.com/v5/search for icons options
-	Icon string `json:"icon,omitempty"`
+	Icon string `json:"icon,omitempty" yaml:"icon,omitempty"`
 	// Items is map of services in homer dashboard
-	Items []Item `json:"items,omitempty"`
+	Items []Item `json:"items,omitempty" yaml:"items,omitempty"`
 }
 
 type Item struct {
 	// Name of service in homer dashboard
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Icon of service in homer dashboard, See https://fontawesome.com/v5/search for icons options
-	Icon string `json:"icon,omitempty"`
+	Icon string `json:"icon,omitempty" yaml:"icon,omitempty"`
 	// A path to an image can also be provided. Note that icon take precedence if both icon and logo are set.
-	Logo string `json:"logo,omitempty"`
+	Logo string `json:"logo,omitempty" yaml:"logo,omitempty"`
 	// Tagstyle is the style of the tag in homer dashboard, See https://github.com/bastienwirtz/homer/blob/main/docs/configuration.md#style-options	for style options
-	TagStyle string `json:"tagstyle,omitempty"`
+	TagStyle string `json:"tagstyle,omitempty" yaml:"tagstyle,omitempty"`
 	// SubTitle of the service in homer dashboard
-	SubTitle string `json:"subtitle,omitempty"`
+	SubTitle string `json:"subtitle,omitempty" yaml:"subtitle,omitempty"`
 	// Tag of the service in homer dashboard
-	Tag string `json:"tag,omitempty"`
+	Tag string `json:"tag,omitempty" yaml:"tag,omitempty"`
 	// Keywords of the service in homer dashboard
-	Keyword string `json:"keywords,omitempty"`
+	Keyword string `json:"keywords,omitempty" yaml:"keywords,omitempty"`
 	// Url of the service in homer dashboard
-	Url string `json:"url,omitempty"`
+	Url string `json:"url,omitempty" yaml:"url,omitempty"`
 	// Target of the service in homer dashboard
-	Target string `json:"target,omitempty"`
+	Target string `json:"target,omitempty" yaml:"target,omitempty"`
 	// Type of the service in homer dashboard
-	Type string `json:"type,omitempty"`
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
 	// Text to copy when type is clipboard
-	Clipboard string `json:"clipboard,omitempty"`
+	Clipboard string `json:"clipboard,omitempty" yaml:"clipboard,omitempty"`
 	// Optional color for card to set color directly without custom stylesheet
-	Background string `json:"background,omitempty"`
+	Background string `json:"background,omitempty" yaml:"background,omitempty"`
 	// Optional API key used to fetch service data when necessary.
-	ApiKey string `json:"apikey,omitempty"`
+	ApiKey string `json:"apikey,omitempty" yaml:"apikey,omitempty"`
 	// Optional API version used to fetch service data when necessary.
-	ApiVersion string `json:"apiVersion,omitempty"`
+	ApiVersion string `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
 	// Optional check interval in seconds to fetch service data when necessary.
-	CheckInterval int `json:"checkInterval,omitempty"`
+	CheckInterval int `json:"checkInterval,omitempty" yaml:"checkInterval,omitempty"`
 	// Optional - text or bar. Default to text.
-	Display string `json:"display,omitempty"`
+	Display string `json:"display,omitempty" yaml:"display,omitempty"`
 	// Optional download interval
-	DownloadInterval int `json:"downloadInterval,omitempty"`
+	DownloadInterval int `json:"downloadInterval,omitempty" yaml:"downloadInterval,omitempty"`
 	// Optional alternative base URL used to fetch service data when necessary.
-	Endpoint string `json:"endpoint,omitempty"`
+	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
 	// Optional environments variables used to fetch service data when necessary.
-	Environments []string `json:"environments,omitempty"`
+	Environments []string `json:"environments,omitempty" yaml:"environments,omitempty"`
 	// Optional interval to fetch service data when necessary.
-	Interval int `json:"interval,omitempty"`
+	Interval int `json:"interval,omitempty" yaml:"interval,omitempty"`
 	// Displays Home Assistant instance status, version, location, and entity count
-	Items []string `json:"items,omitempty"`
+	Items []string `json:"items,omitempty" yaml:"items,omitempty"`
 	// Optional library type for emby/jellyfin
-	LibraryType string `json:"libraryType,omitempty"`
+	LibraryType string `json:"libraryType,omitempty" yaml:"libraryType,omitempty"`
 	// Optional limit for number of items to fetch when necessary.
-	Limit int `json:"limit,omitempty"`
+	Limit int `json:"limit,omitempty" yaml:"limit,omitempty"`
 	// Optional location for weather
-	Location string `json:"location,omitempty"`
+	Location string `json:"location,omitempty" yaml:"location,omitempty"`
 	// Optional location id for weather
-	LocationId string `json:"locationId,omitempty"`
+	LocationId string `json:"locationId,omitempty" yaml:"locationId,omitempty"`
 	// Optional password used to fetch service data when necessary.
-	Password string `json:"password,omitempty"`
+	Password string `json:"password,omitempty" yaml:"password,omitempty"`
 	// Optional query used to fetch service data when necessary.
-	Query string `json:"query,omitempty"`
+	Query string `json:"query,omitempty" yaml:"query,omitempty"`
 	// Optional rate interval
-	RateInterval int `json:"rateInterval,omitempty"`
+	RateInterval int `json:"rateInterval,omitempty" yaml:"rateInterval,omitempty"`
 	// Optional separator for home assistant
-	Separator string `json:"separator,omitempty"`
+	Separator string `json:"separator,omitempty" yaml:"separator,omitempty"`
 	// Optional slug used to fetch service data when necessary.
-	Slug string `json:"slug,omitempty"`
+	Slug string `json:"slug,omitempty" yaml:"slug,omitempty"`
 	// Optional - either status or counter for miniflux
-	Style string `json:"style,omitempty"`
+	Style string `json:"style,omitempty" yaml:"style,omitempty"`
 	// Optional token used to fetch service data when necessary.
-	Token string `json:"token,omitempty"`
+	Token string `json:"token,omitempty" yaml:"token,omitempty"`
 	// Optional torrent interval
-	TorrentInterval int `json:"torrentInterval,omitempty"`
+	TorrentInterval int `json:"torrentInterval,omitempty" yaml:"torrentInterval,omitempty"`
 	// Optional units for weather
-	Units string `json:"units,omitempty"`
+	Units string `json:"units,omitempty" yaml:"units,omitempty"`
 	// Optional update interval in seconds to fetch service data when necessary.
-	UpdateInterval int `json:"updateInterval,omitempty"`
+	UpdateInterval int `json:"updateInterval,omitempty" yaml:"updateInterval,omitempty"`
 	// Optional username used to fetch service data when necessary.
-	Username string `json:"username,omitempty"`
+	Username string `json:"username,omitempty" yaml:"username,omitempty"`
 	// Optional xmlrpc used to fetch service data when necessary.
-	Xmlrpc string `json:"xmlrpc,omitempty"`
+	Xmlrpc string `json:"xmlrpc,omitempty" yaml:"xmlrpc,omitempty"`
 }

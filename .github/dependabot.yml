@@ -1,23 +1,39 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# Dependabot PR titles must pass the "PR Conventional Commit Validation"
+# workflow and be picked up by release-please:
+#   - Go modules     -> "fix(deps): ..." : releasable, triggers a patch release
+#   - GitHub Actions -> "ci(deps): ..."  : listed in the changelog, no release on its own
+# https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
 
 version: 2
 updates:
-  - package-ecosystem: "gomod" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "gomod"
+    directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 4
-    commit_message:
-      prefix: "deps"
-      include_scope: false
-  - package-ecosystem: "github-actions" # See documentation for possible values
-    directory: "/" # Location of package manifests
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "fix"
+      include: "scope"
+    groups:
+      # k8s.io/* and controller-runtime must move together: bumping client-go
+      # alone breaks the build (see #176).
+      kubernetes:
+        patterns:
+          - "k8s.io/*"
+          - "sigs.k8s.io/*"
+      aws-sdk:
+        patterns:
+          - "github.com/aws/*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 2
-    commit_message:
-      prefix: "chore"
-      include_scope: true
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

@@ -82,5 +82,5 @@ type HomerPageList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(&HomerPage{}, &HomerPageList{})
+	knownTypes = append(knownTypes, &HomerPage{}, &HomerPageList{})
 }

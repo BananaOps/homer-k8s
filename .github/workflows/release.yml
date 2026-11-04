@@ -11,35 +11,24 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1 # 3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - name: Get tag name
-        id: tag
-        uses: haya14busa/action-cond@v1.2.1 # 94f77f7a80cd666cb3155084e428254fea4281fd
-        with:
-          cond: "${{ startsWith(github.ref, 'refs/tags/') }}"
-          if_true: ${{ github.ref }}
-          if_false: ${{ steps.bumpr.outputs.next_version }}
-
       - id: version_tag
         run: |
-          echo "::set-output name=tag::$(echo ${{steps.tag.outputs.value}} | cut -d'v' -f2 )"
-          echo "::set-output name=tag_chart::$(echo ${{steps.tag.outputs.value}} | cut -d'v' -f2 )"
-
+          echo "tag=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          echo "tag_chart=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       #Update version in Chart.yaml
-      - if: steps.tag.outputs.value != ''
-        run: |
+      - run: |
           sed -i '/^version:/c\version: ${{steps.version_tag.outputs.tag_chart}}' ./helm/homer-k8s/Chart.yaml
           sed -i '/^appVersion:/c\appVersion: "${{steps.version_tag.outputs.tag_chart}}"' ./helm/homer-k8s/Chart.yaml
 
-      - if: steps.tag.outputs.value != ''
-        uses: stefanzweifel/git-auto-commit-action@v7.2.0 # 4a55954c782fc1ea30b9056cd3e7a2b40ca8887d
+      - uses: stefanzweifel/git-auto-commit-action@v7.2.0 # 4a55954c782fc1ea30b9056cd3e7a2b40ca8887d
         with:
           commit_message: "ci: bump charts to ${{steps.version_tag.outputs.tag}}"
           branch: main
   
       - uses: actions/setup-go@v7.0.0 # b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: stable
+          go-version-file: go.mod
 
       - name: Login to Docker Hub
         uses: docker/login-action@v4.5.1 # abd2ef45e78c5afb21d64d4ca52ee8550d9572c7
