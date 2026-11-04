@@ -29,4 +29,7 @@ jobs:
         id: release-please
         with:
           token: '${{ steps.get_token.outputs.token }}'
-          release-type: simple
+          # No release-type here: it would make the action ignore
+          # release-please-config.json and .release-please-manifest.json.
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

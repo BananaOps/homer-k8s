@@ -4,38 +4,50 @@ on:
   pull_request:
     paths:
       - .github/workflows/go-test.yml
-      - internal/**
+      - .golangci.yml
+      - Makefile
+      - api/**
       - cmd/**
-      - docs/**
-      - generated/**
+      - hack/**
+      - helm/homer-k8s/crds/**
+      - internal/**
+      - pkg/**
       - go.mod
       - go.sum
-      - main.go
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   linting:
     name: Go lint
     runs-on: ubuntu-latest
     steps:
-
     - name: Check out code into the Go module directory
       uses: actions/checkout@v7.0.1 # 3d3c42e5aac5ba805825da76410c181273ba90b1
 
-    - name: Set up Go 1.x
+    - name: Set up Go
       uses: actions/setup-go@v7.0.0 # b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
       with:
-        go-version: stable
+        go-version-file: go.mod
 
     - name: golangci-lint
       uses: golangci/golangci-lint-action@v9.3.0 # ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
       with:
+        version: v2.15.0  # keep in sync with GOLANGCI_LINT_VERSION in the Makefile
         args: --timeout=30m
 
   security:
     name: Go Security
     runs-on: ubuntu-latest
     steps:
-
     - name: Check out code into the Go module directory
       uses: actions/checkout@v7.0.1 # 3d3c42e5aac5ba805825da76410c181273ba90b1
 
@@ -44,21 +56,49 @@ jobs:
       with:
         args: ./...
 
+  codegen:
+    name: Generated code up to date
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v7.0.1 # 3d3c42e5aac5ba805825da76410c181273ba90b1
+
+    - name: Set up Go
+      uses: actions/setup-go@v7.0.0 # b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      with:
+        go-version-file: go.mod
+
+    - name: Regenerate deepcopy and CRDs
+      run: make generate manifests
+
+    - name: Check for drift
+      run: |
+        if ! git diff --exit-code; then
+          echo "::error::Generated files are out of date. Run 'make generate manifests' and commit the result."
+          exit 1
+        fi
+
   test:
     name: Go test
     runs-on: ubuntu-latest
     steps:
-
     - name: Check out code into the Go module directory
       uses: actions/checkout@v7.0.1 # 3d3c42e5aac5ba805825da76410c181273ba90b1
 
-    - name: Set up Go 1.x
+    - name: Set up Go
       uses: actions/setup-go@v7.0.0 # b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
       with:
-        go-version: stable
-
-    - name: Install
-      run: go mod download -x
+        go-version-file: go.mod
 
     - name: Test
-      run: go test -v ./...
+      run: go test -race -coverprofile=cover.out ./...
+
+    - name: Coverage summary
+      run: |
+        {
+          echo '### Coverage'
+          echo '```'
+          go tool cover -func=cover.out | grep -v zz_generated
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+        go tool cover -func=cover.out | tail -n 1
