@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.6.0](https://github.com/BananaOps/homer-k8s/compare/v0.5.1...v0.6.0) (2026-11-04)
+
+
+### Features
+
+* add new crd for page ([#170](https://github.com/BananaOps/homer-k8s/issues/170)) ([01a4dd2](https://github.com/BananaOps/homer-k8s/commit/01a4dd2a7f4aefb8a7da7845258559ae40f98fcd))
+* more fields in config items ([#165](https://github.com/BananaOps/homer-k8s/issues/165)) ([0fbef5c](https://github.com/BananaOps/homer-k8s/commit/0fbef5ca6cb5b97e1aade244e8a9e2d34b13c1f2))
+* pass through extra Homer keys and add customCss to the chart ([#177](https://github.com/BananaOps/homer-k8s/issues/177)) ([549ad24](https://github.com/BananaOps/homer-k8s/commit/549ad24d6230ae56bed99e541949cbfea6892f2e))
+
+
+### Bug Fixes
+
+* security issue G703 (CWE-22): Path traversal via taint analysis ([392062a](https://github.com/BananaOps/homer-k8s/commit/392062a93f3a03c5668f70fadb7fe93ceb7d9523))
+
 ## [0.5.1](https://github.com/BananaOps/homer-k8s/compare/v0.5.0...v0.5.1) (2025-05-06)
 
 
