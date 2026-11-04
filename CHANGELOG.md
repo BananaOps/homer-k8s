@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.6.2](https://github.com/BananaOps/homer-k8s/compare/v0.6.1...v0.6.2) (2026-11-04)
+
+
+### 🐛 Bug Fixes
+
+* refresh dependencies, fix YAML keys and EC2 discovery, repair CI and release automation ([#180](https://github.com/BananaOps/homer-k8s/issues/180)) ([8c619a7](https://github.com/BananaOps/homer-k8s/commit/8c619a729bc954800b24bb135ec15b68787586ca))
+
+
+### 📚 Documentation
+
+* refresh README ([#184](https://github.com/BananaOps/homer-k8s/issues/184)) ([9935b68](https://github.com/BananaOps/homer-k8s/commit/9935b6814e34a3d7a0c9ef2a82e769740ea37314))
+
+
+### 👷 CI/CD
+
+* bump charts to 0.6.1 ([56a0b98](https://github.com/BananaOps/homer-k8s/commit/56a0b98d66cb14f2ee4eb3cfa8194710c1b3723f))
+* pin GitHub Actions to their latest release by commit SHA ([#183](https://github.com/BananaOps/homer-k8s/issues/183)) ([3c4d86b](https://github.com/BananaOps/homer-k8s/commit/3c4d86bc37ffae68c3941332996a2eec3dc9d98e))
+
 ## [0.6.1](https://github.com/BananaOps/homer-k8s/compare/v0.6.0...v0.6.1) (2026-11-04)
 
 
