@@ -15,6 +15,9 @@ type HomerConfig struct {
 	Message  Message               `yaml:"message"`
 	Links    []Link                `yaml:"links"`
 	Services []homerv1alpha1.Group `yaml:"services"`
+	// Extra keeps every other Homer key (stylesheet, theme, defaults, header...)
+	// so they are passed through from global_config.yml to config.yml.
+	Extra map[string]interface{} `yaml:",inline"`
 }
 
 type Colors struct {
