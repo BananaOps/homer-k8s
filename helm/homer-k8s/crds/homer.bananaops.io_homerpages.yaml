@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.1
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: homerpages.homer.bananaops.io
 spec:
   group: homer.bananaops.io
@@ -59,7 +59,8 @@ spec:
                   main config.yml navbar links. Defaults to false.
                 type: boolean
               groups:
-                description: Groups is the list of service groups displayed on this page.
+                description: Groups is the list of service groups displayed on this
+                  page.
                 items:
                   properties:
                     icon:
