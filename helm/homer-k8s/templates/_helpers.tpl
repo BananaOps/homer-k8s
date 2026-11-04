@@ -66,5 +66,12 @@ Create the name of the service account to use
 Calculate the config from structured and unstructured text input
 */}}
 {{- define "homer-k8s.calculatedConfig" -}}
-{{ tpl (mergeOverwrite (tpl .Values.homer.config . | fromYaml) .Values.homer.structuredConfig | toYaml) . }}
+{{- $config := mergeOverwrite (tpl .Values.homer.config . | fromYaml) .Values.homer.structuredConfig }}
+{{- if .Values.homer.customCss }}
+{{- $stylesheets := $config.stylesheet | default list }}
+{{- if not (has "assets/custom.css" $stylesheets) }}
+{{- $_ := set $config "stylesheet" (append $stylesheets "assets/custom.css") }}
+{{- end }}
+{{- end }}
+{{ tpl ($config | toYaml) . }}
 {{- end }}

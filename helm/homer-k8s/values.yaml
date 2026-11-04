@@ -117,6 +117,12 @@ homer:
     tag: latest
   # -- Structured homer configuration, takes precedence over `homer.config`
   structuredConfig: {}
+  # -- Custom CSS served as `assets/custom.css` and added to the `stylesheet` list automatically
+  customCss: ""
+  # -- Extra volumes for the dashboard pod (e.g. font files referenced by `customCss`)
+  extraVolumes: []
+  # -- Extra volume mounts for the dashboard container, under `/www/assets/...`
+  extraVolumeMounts: []
   config: |
     title: "App dashboard"
     subtitle: "Homer k8s"

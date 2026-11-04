@@ -7,3 +7,7 @@ metadata:
 data:
   global_config.yml: | 
     {{ include "homer-k8s.calculatedConfig" . | nindent 4 }}
+  {{- with .Values.homer.customCss }}
+  custom.css: |
+    {{- . | nindent 4 }}
+  {{- end }}

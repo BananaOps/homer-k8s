@@ -84,6 +84,15 @@ spec:
           volumeMounts:
             - mountPath: /www/assets
               name: asssets
+            {{- if .Values.homer.customCss }}
+            - mountPath: /www/assets/custom.css
+              name: custom-css
+              subPath: custom.css
+              readOnly: true
+            {{- end }}
+            {{- with .Values.homer.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -105,3 +114,14 @@ spec:
             items:
               - key: global_config.yml
                 path: global_config.yml
+        {{- if .Values.homer.customCss }}
+        - name: custom-css
+          configMap:
+            name: {{ include "homer-k8s.fullname" . }}
+            items:
+              - key: custom.css
+                path: custom.css
+        {{- end }}
+        {{- with .Values.homer.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
