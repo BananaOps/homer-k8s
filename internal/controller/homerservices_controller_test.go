@@ -20,6 +20,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	homerv1alpha1 "github.com/BananaOps/homer-k8s/api/v1alpha1"
@@ -244,5 +245,46 @@ func TestHomerServicesReconcile_NoWriteWhenUnchanged(t *testing.T) {
 	_ = yaml.Unmarshal(data, &got)
 	if len(got.Services) != 1 || got.Services[0].Name != "ops" {
 		t.Errorf("unexpected config after no-op reconcile: %+v", got.Services)
+	}
+}
+
+// Regression: config.yml must use Homer's camelCase keys and omit empty fields.
+func TestHomerServicesReconcile_WritesHomerKeys(t *testing.T) {
+	scheme := newHomerServicesScheme(t)
+	svc := &homerv1alpha1.HomerServices{
+		ObjectMeta: metav1.ObjectMeta{Name: "smart", Namespace: "default"},
+		Spec: homerv1alpha1.HomerServicesSpec{Groups: []homerv1alpha1.Group{{
+			Name: "media",
+			Items: []homerv1alpha1.Item{{
+				Name: "Jellyfin", Type: "Emby", Keyword: "movies", ApiVersion: "v2",
+				CheckInterval: 30, LibraryType: "movies",
+			}},
+		}}},
+	}
+	r := &HomerServicesReconciler{
+		Client: fake.NewClientBuilder().WithScheme(scheme).WithObjects(svc).Build(),
+		Scheme: scheme,
+	}
+	tmpDir := t.TempDir()
+	t.Setenv("HOMER_CONFIG_DIR", tmpDir)
+
+	if _, err := r.Reconcile(context.Background(), ctrl.Request{
+		NamespacedName: types.NamespacedName{Name: "smart", Namespace: "default"},
+	}); err != nil {
+		t.Fatalf("Reconcile: %v", err)
+	}
+
+	raw, err := os.ReadFile(filepath.Join(tmpDir, "config.yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := string(raw)
+	for _, want := range []string{"keywords: movies", "apiVersion: v2", "checkInterval: 30", "libraryType: movies"} {
+		if !strings.Contains(got, want) {
+			t.Errorf("expected %q in config.yml:\n%s", want, got)
+		}
+	}
+	if strings.Contains(got, "xmlrpc:") || strings.Contains(got, "password:") {
+		t.Errorf("empty fields must be omitted:\n%s", got)
 	}
 }
