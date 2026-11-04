@@ -6,16 +6,35 @@ metadata:
   labels:
     {{- include "homer-k8s.labels" . | nindent 4 }}
 rules:
-  # CRUD homerservices
+  # Keep in sync with the +kubebuilder:rbac markers of internal/controller
+  # CRUD homerservices and homerpages
   - verbs:
       - get
       - list
-      - create
-      - delete
-      - update
       - watch
+      - create
+      - update
+      - patch
+      - delete
     apiGroups:
       - homer.bananaops.io
     resources:
       - homerservices
+      - homerpages
+  - verbs:
+      - get
+      - update
+      - patch
+    apiGroups:
+      - homer.bananaops.io
+    resources:
+      - homerservices/status
+      - homerpages/status
+  - verbs:
+      - update
+    apiGroups:
+      - homer.bananaops.io
+    resources:
+      - homerservices/finalizers
+      - homerpages/finalizers
 {{- end }}
