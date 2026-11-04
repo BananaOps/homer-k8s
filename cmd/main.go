@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"flag"
 	"os"
@@ -31,6 +32,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
@@ -75,10 +77,6 @@ func main() {
 
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
-
-	if os.Getenv("HOMER_EC2_ENABLED") == "true" {
-		go ec2.ControllerEc2()
-	}
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
@@ -146,6 +144,19 @@ func main() {
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder
+
+	if os.Getenv("HOMER_EC2_ENABLED") == "true" {
+		if err := mgr.Add(manager.RunnableFunc(func(ctx context.Context) error {
+			syncer, err := ec2.NewFromEnv(ctx)
+			if err != nil {
+				return err
+			}
+			return syncer.Run(ctx, ec2.DefaultInterval)
+		})); err != nil {
+			setupLog.Error(err, "unable to set up ec2 discovery")
+			os.Exit(1)
+		}
+	}
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")
