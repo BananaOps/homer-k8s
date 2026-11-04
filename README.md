@@ -97,7 +97,7 @@ skaffold build
 To updates manifest files : 
 
 ```bash
-make manifest
+make manifests
 ```
 
 ### Deploy with skaffold
